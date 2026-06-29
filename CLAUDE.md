@@ -2,6 +2,10 @@
 
 This file is read by Claude Code at the start of every session. It defines how to work in this codebase. Follow every rule here without exception — they exist because the previous version of this CRM violated them and failed as a result.
 
+@docs/PRODUCT.md
+@docs/SCHEMA.md
+@docs/ARCHITECTURE.md
+
 ## What This Project Is
 
 An internal CRM for TLV Capital, a defense export company. Three user roles: Admin (full access across all regions and sectors), RSM (own region only), Sector Manager (own sector's product catalog + read-only pipeline). Built with Next.js 15 App Router, Supabase (PostgreSQL + RLS), shadcn/ui, TanStack Table, and TanStack Query.
@@ -244,6 +248,22 @@ Access is enforced at two layers — both must be present:
 2. **Supabase RLS** — blocks unauthorized data at the database level, regardless of what the application sends
 
 Never rely on only one layer.
+
+## Branching and PRs
+
+Never commit directly to main. Before writing any code, check the current branch. If on main, create a branch first — without asking.
+
+Branch naming:
+- `feat/short-description` — new features or pages
+- `db/short-description` — migrations, RLS changes, triggers
+- `fix/short-description` — bug fixes
+
+At the end of any implementation session:
+1. Run `/code-review high` and fix any CONFIRMED findings
+2. Create a PR with `gh pr create`
+3. Merge with `gh pr merge --squash` once clean
+
+Skip the PR only for docs-only changes (CLAUDE.md, README, docs/).
 
 ## Commands
 

@@ -40,6 +40,7 @@ let regionNorthId: string
 let regionSouthId: string
 let sectorId: string
 let stageId: string
+let createdStageId: string | null = null
 let adminUserId: string
 let rsmNorthUserId: string
 let rsmSouthUserId: string
@@ -82,6 +83,7 @@ beforeAll(async () => {
     const { data: newStage } = await serviceClient.from('pipeline_stages')
       .insert({ name: 'RLS_Test_Stage', display_order: 99 }).select('id')
     stageId = newStage![0].id
+    createdStageId = stageId
   }
 
   // Auth users
@@ -153,6 +155,9 @@ afterAll(async () => {
   await serviceClient.from('users').delete().in('id', [adminUserId, rsmNorthUserId, rsmSouthUserId, sectorMgrUserId])
   await serviceClient.from('regions').delete().in('id', [regionNorthId, regionSouthId])
   await serviceClient.from('sectors').delete().eq('id', sectorId)
+  if (createdStageId) {
+    await serviceClient.from('pipeline_stages').delete().eq('id', createdStageId)
+  }
   await serviceClient.auth.admin.deleteUser(adminUserId)
   await serviceClient.auth.admin.deleteUser(rsmNorthUserId)
   await serviceClient.auth.admin.deleteUser(rsmSouthUserId)
@@ -295,6 +300,8 @@ describe('contracts RLS', () => {
       .update({ is_at_risk: true })
       .eq('id', contractNorthId)
     expect(error).toBeNull()
+    const { data } = await serviceClient.from('contracts').select('is_at_risk').eq('id', contractNorthId)
+    expect(data![0].is_at_risk).toBe(true)
     // Reset
     await serviceClient.from('contracts').update({ is_at_risk: false }).eq('id', contractNorthId)
   })
