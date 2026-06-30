@@ -1,12 +1,23 @@
 import { redirect } from 'next/navigation'
 import { getCurrentUser } from '@/lib/auth'
+import { createClient } from '@/lib/supabase/server'
 import { Providers } from './providers'
 import { Sidebar } from '@/components/shared/Sidebar'
 import { MobileNav } from '@/components/shared/MobileNav'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser()
-  if (!user) redirect('/login')
+
+  if (!user) {
+    // getCurrentUser() returns null when either the auth session is missing OR the
+    // users table has no matching row. If the session exists but the row is missing,
+    // the proxy will keep redirecting here → /login → back here (loop).
+    // Break the loop by signing out so the proxy sees an unauthenticated user.
+    const supabase = await createClient()
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (authUser) await supabase.auth.signOut()
+    redirect('/login')
+  }
 
   return (
     <Providers>
