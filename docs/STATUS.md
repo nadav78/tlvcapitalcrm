@@ -16,13 +16,13 @@ Nothing currently in progress.
 - **Foundation: Supabase clients** — `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server + service role; supports `SUPABASE_TEST_TOKEN` for action tests)
 - **Foundation: Auth helpers** — `lib/auth.ts` (`getUserProfile`, `requireAuth`, `UserProfile` type)
 - **Foundation: Constants** — `lib/constants.ts` (CURRENCIES, all enum display-name maps)
-- **Foundation: Middleware** — `middleware.ts` (auth redirect + admin-only `/settings` guard)
+- **Foundation: Middleware** — `middleware.ts` (auth redirect + admin-only `/settings` guard; all redirects propagate rotated Supabase session cookies via `redirectWithSession` helper)
 - **Foundation: App shell** — `app/(auth)/layout.tsx`, `app/(auth)/login/page.tsx`, `app/(app)/layout.tsx` (sidebar + mobile tab bar), `app/(app)/dashboard/page.tsx` (placeholder)
 - **Foundation: Shared components** — `components/shared/DataTable.tsx` (generic TanStack Table wrapper), `components/shared/PageHeader.tsx`, `components/shared/InlineTextareaCell.tsx`, `components/shared/InlineStageCell.tsx`, `components/shared/Sidebar.tsx`, `components/shared/QueryProvider.tsx`
 - **Opportunities: types** — `features/opportunities/types.ts`
 - **Opportunities: schemas + tests** — `features/opportunities/schemas.ts` (`opportunityRegisterSchema`, `opportunitySchema`, `opportunityProductSchema`, `closeDealSchema`); `features/opportunities/schemas.test.ts` (38 tests, all passing)
-- **Opportunities: actions + tests** — `features/opportunities/actions.ts` (`createOpportunity`, `updateOpportunity`, `updateOpportunityStage`, `updateOpportunityField`, `closeOpportunity`, `reassignOpportunity`); `features/opportunities/actions.test.ts` (14 tests, all passing)
-- **Opportunities: API + hooks** — `features/opportunities/api.ts` (`getOpportunities`, `getOpportunityById`, `getOpportunityProducts`, `getPipelineStages`, `getStaleOpportunities`); `features/opportunities/hooks.ts` (full query + mutation hooks with cache invalidation)
+- **Opportunities: actions + tests** — `features/opportunities/actions.ts` (`createOpportunity`, `updateOpportunity`, `updateOpportunityStage`, `updateOpportunityField`, `closeOpportunity`, `reassignOpportunity`); `features/opportunities/actions.test.ts` (14 tests, all passing); code-reviewed and patched: sector_manager explicit guard, `closeOpportunity` idempotency check on contract insert, `updateOpportunityField` discriminated union type
+- **Opportunities: API + hooks** — `features/opportunities/api.ts` (`getOpportunities`, `getOpportunityById`, `getOpportunityProducts`, `getPipelineStages`, `getStaleOpportunities`); `features/opportunities/hooks.ts` (full query + mutation hooks with cache invalidation; redundant invalidation in `useCloseOpportunity` removed)
 - **Opportunities: column definitions** — `features/opportunities/columns.tsx` (`getOpportunityColumns(role, onWonSelected)` factory)
 - **date-fns** — installed as production dependency (used in column definitions for relative timestamps)
 
@@ -102,3 +102,4 @@ Dependencies flow top to bottom — each item can be started once the one above 
 - **Action test pattern:** action tests use `vi.mock('@/lib/supabase/server')` to inject a real `@supabase/supabase-js` client authenticated via `signInWithPassword`. This is NOT mocking Supabase — it's bypassing the Next.js cookie session plumbing while still using the real DB with RLS enforced.
 - **Zod v4 note:** UUIDs in test fixtures must be valid RFC-4122 format (version bits enforced). Nil UUID variants like `00000000-0000-0000-0000-000000000001` are rejected. Use properly-formatted v4 UUIDs.
 - **date-fns** installed as a production dependency.
+- **PR #1** — `feat/foundation-and-opportunities` open at https://github.com/nadav78/tlvcapitalcrm/pull/1. Covers all Foundation + Opportunities data layer items above. 71/71 tests pass.
