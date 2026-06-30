@@ -131,6 +131,8 @@ export function useCloseOpportunity() {
       closeOpportunity(opportunityId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: opportunityKeys.all })
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['contracts'] })
     },
   })
 }

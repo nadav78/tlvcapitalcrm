@@ -104,13 +104,24 @@ export async function updateOpportunityStage(opportunityId: string, stageId: str
   // Verify RSM access
   const { data: existing } = await supabase
     .from('opportunities')
-    .select('id, rsm_id')
+    .select('id, rsm_id, stage_id')
     .eq('id', opportunityId)
     .single()
 
   if (!existing) return { error: 'Opportunity not found or access denied' }
   if (profile.role === 'rsm' && existing.rsm_id !== profile.id) {
     return { error: 'Access denied' }
+  }
+
+  // Guard re-staging from Won/Lost — require the confirmation flow
+  const { data: currentStage } = await supabase
+    .from('pipeline_stages')
+    .select('is_won, is_lost')
+    .eq('id', existing.stage_id)
+    .single()
+
+  if (currentStage?.is_won || currentStage?.is_lost) {
+    return { error: 'use_reopen_flow' }
   }
 
   const { error } = await supabase
@@ -155,9 +166,13 @@ export async function updateOpportunityField({
     return { error: 'Access denied' }
   }
 
+  const patch = field === 'next_step'
+    ? { next_step: value as string }
+    : { is_at_risk: value as boolean }
+
   const { error } = await supabase
     .from('opportunities')
-    .update({ [field]: value })
+    .update(patch)
     .eq('id', opportunityId)
 
   if (error) return { error: error.message }
@@ -181,15 +196,13 @@ export async function closeOpportunity(
 
   const profile = await getUserProfile()
   if (!profile || !profile.is_active) return { error: 'Unauthorized' }
+  if (profile.role === 'sector_manager') return { error: 'Sector Managers cannot close opportunities' }
 
   // Use service client to read the opportunity (RLS check happens via profile)
   const svc = createServiceClient()
   const { data: opp, error: oppError } = await svc
     .from('opportunities')
-    .select(
-      'id, rsm_id, region_id, prospect_company_name, prospect_organization_type, country, ' +
-      'prospect_website, prospect_contact_name, prospect_contact_email, prospect_contact_phone',
-    )
+    .select('id, rsm_id, region_id, prospect_company_name, prospect_organization_type, country, prospect_website, prospect_contact_name, prospect_contact_email, prospect_contact_phone')
     .eq('id', opportunityId)
     .single()
 
@@ -274,14 +287,25 @@ export async function closeOpportunity(
       : { data: null }
 
     if (!existingContact) {
-      await svc.from('contacts').insert({
+      // Only mark is_primary if the client has no primary contact yet
+      // (second win for the same client would violate the partial unique index)
+      const { data: existingPrimary } = await svc
+        .from('contacts')
+        .select('id')
+        .eq('client_id', clientId)
+        .eq('is_primary', true)
+        .limit(1)
+        .maybeSingle()
+
+      const { error: contactError } = await svc.from('contacts').insert({
         client_id: clientId,
         opportunity_id: opportunityId,
         full_name: opp.prospect_contact_name,
         email: opp.prospect_contact_email ?? null,
         phone: opp.prospect_contact_phone ?? null,
-        is_primary: true,
+        is_primary: !existingPrimary,
       })
+      if (contactError) return { error: contactError.message }
     }
   }
 

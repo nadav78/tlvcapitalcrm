@@ -29,12 +29,15 @@ export async function getOpportunities(options?: {
     .select(OPPORTUNITY_SELECT)
     .order('updated_at', { ascending: false })
 
-  if (!options?.includeWonLost) {
-    // Exclude Won and Lost by default
-    const { data: terminalStages } = await supabase
+  if (!options?.includeWonLost && !options?.stageIds?.length) {
+    // Exclude Won and Lost by default. Skip when stageIds is provided — the
+    // caller has already specified exactly which stages they want, and adding
+    // a NOT IN on top creates an impossible AND (e.g. stageIds:[wonId] → 0 rows).
+    const { data: terminalStages, error: stagesError } = await supabase
       .from('pipeline_stages')
       .select('id')
       .or('is_won.eq.true,is_lost.eq.true')
+    if (stagesError) throw stagesError
     const terminalIds = terminalStages?.map((s) => s.id) ?? []
     if (terminalIds.length > 0) {
       query = query.not('stage_id', 'in', `(${terminalIds.join(',')})`)
@@ -55,7 +58,7 @@ export async function getOpportunities(options?: {
 
   const { data, error } = await query
   if (error) throw error
-  return (data ?? []) as Opportunity[]
+  return (data ?? []) as unknown as Opportunity[]
 }
 
 export async function getOpportunityById(id: string): Promise<Opportunity | null> {
@@ -67,7 +70,7 @@ export async function getOpportunityById(id: string): Promise<Opportunity | null
     .single()
 
   if (error) throw error
-  return data as Opportunity | null
+  return data as unknown as Opportunity | null
 }
 
 export async function getOpportunityProducts(opportunityId: string): Promise<OpportunityProduct[]> {
@@ -84,7 +87,7 @@ export async function getOpportunityProducts(opportunityId: string): Promise<Opp
     .order('created_at', { ascending: true })
 
   if (error) throw error
-  return (data ?? []) as OpportunityProduct[]
+  return (data ?? []) as unknown as OpportunityProduct[]
 }
 
 export async function getPipelineStages(): Promise<PipelineStage[]> {
@@ -104,10 +107,11 @@ export async function getStaleOpportunities(daysSinceActivity = 30): Promise<Opp
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - daysSinceActivity)
 
-  const { data: terminalStages } = await supabase
+  const { data: terminalStages, error: stagesError } = await supabase
     .from('pipeline_stages')
     .select('id')
     .or('is_won.eq.true,is_lost.eq.true')
+  if (stagesError) throw stagesError
   const terminalIds = terminalStages?.map((s) => s.id) ?? []
 
   let query = supabase
@@ -122,5 +126,5 @@ export async function getStaleOpportunities(daysSinceActivity = 30): Promise<Opp
 
   const { data, error } = await query
   if (error) throw error
-  return (data ?? []) as Opportunity[]
+  return (data ?? []) as unknown as Opportunity[]
 }

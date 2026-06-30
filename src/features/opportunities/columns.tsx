@@ -136,8 +136,10 @@ export function getOpportunityColumns(
   // sector_manager gets read-only view — no inline-editable cells
   if (role === 'sector_manager') {
     return base.map((col) => {
+      const key = (col as { accessorKey?: string }).accessorKey
+
       // Replace inline-editable next_step with a plain display
-      if (col.id === 'next_step' || (col as { accessorKey?: string }).accessorKey === 'next_step') {
+      if (col.id === 'next_step' || key === 'next_step') {
         return {
           ...col,
           cell: ({ row }: { row: { original: Opportunity } }) => (
@@ -147,6 +149,23 @@ export function getOpportunityColumns(
           ),
         } as ColumnDef<Opportunity>
       }
+
+      // Replace interactive stage cell with a read-only badge — no onWonSelected
+      if (col.id === 'stage') {
+        return {
+          ...col,
+          cell: ({ row }: { row: { original: Opportunity } }) => {
+            const stage = row.original.stage
+            if (!stage) return null
+            return (
+              <span className="text-xs font-medium text-muted-foreground">
+                {stage.name}
+              </span>
+            )
+          },
+        } as ColumnDef<Opportunity>
+      }
+
       return col
     })
   }

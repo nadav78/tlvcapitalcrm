@@ -67,7 +67,10 @@ export const opportunitySchema = opportunityRegisterSchema.extend({
   is_at_risk: z.boolean().default(false),
 })
 
-export type OpportunityValues = z.infer<typeof opportunitySchema>
+// z.input gives the pre-parse shape where .default() fields are optional.
+// z.infer (output) would make special_license_required / is_at_risk required,
+// forcing every caller to explicitly pass false instead of letting the schema default.
+export type OpportunityValues = z.input<typeof opportunitySchema>
 
 // ── opportunityProductSchema ─────────────────────────────────────────────────
 // One product line on an opportunity. Either product_id (catalog) or
