@@ -114,13 +114,14 @@ export async function updateOpportunityStage(opportunityId: string, stageId: str
   }
 
   // Guard re-staging from Won/Lost — require the confirmation flow
-  const { data: currentStage } = await supabase
+  const { data: currentStage, error: currentStageError } = await supabase
     .from('pipeline_stages')
     .select('is_won, is_lost')
     .eq('id', existing.stage_id)
     .single()
 
-  if (currentStage?.is_won || currentStage?.is_lost) {
+  if (currentStageError || !currentStage) return { error: 'Current stage not found' }
+  if (currentStage.is_won || currentStage.is_lost) {
     return { error: 'use_reopen_flow' }
   }
 

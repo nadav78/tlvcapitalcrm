@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 export async function signIn(input: {
   email: string
   password: string
-}): Promise<{ error: string }> {
+}): Promise<{ error: string } | void> {
   const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword({
     email: input.email,
