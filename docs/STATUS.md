@@ -13,6 +13,18 @@ Nothing currently in progress.
 - **Seed data** — lookup tables populated (sectors, pipeline stages, advisors, regions) (`supabase/seed.sql`)
 - **RLS integration tests** — full test suite verifying policies per role (`supabase/tests/rls.test.ts`)
 - **Project tooling** — Next.js 15, Supabase client, shadcn/ui, TanStack Query/Table, React Hook Form, Zod, Vitest configured
+- **Foundation: Supabase clients** — `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server + service role; supports `SUPABASE_TEST_TOKEN` for action tests)
+- **Foundation: Auth helpers** — `lib/auth.ts` (`getUserProfile`, `requireAuth`, `UserProfile` type)
+- **Foundation: Constants** — `lib/constants.ts` (CURRENCIES, all enum display-name maps)
+- **Foundation: Middleware** — `middleware.ts` (auth redirect + admin-only `/settings` guard)
+- **Foundation: App shell** — `app/(auth)/layout.tsx`, `app/(auth)/login/page.tsx`, `app/(app)/layout.tsx` (sidebar + mobile tab bar), `app/(app)/dashboard/page.tsx` (placeholder)
+- **Foundation: Shared components** — `components/shared/DataTable.tsx` (generic TanStack Table wrapper), `components/shared/PageHeader.tsx`, `components/shared/InlineTextareaCell.tsx`, `components/shared/InlineStageCell.tsx`, `components/shared/Sidebar.tsx`, `components/shared/QueryProvider.tsx`
+- **Opportunities: types** — `features/opportunities/types.ts`
+- **Opportunities: schemas + tests** — `features/opportunities/schemas.ts` (`opportunityRegisterSchema`, `opportunitySchema`, `opportunityProductSchema`, `closeDealSchema`); `features/opportunities/schemas.test.ts` (38 tests, all passing)
+- **Opportunities: actions + tests** — `features/opportunities/actions.ts` (`createOpportunity`, `updateOpportunity`, `updateOpportunityStage`, `updateOpportunityField`, `closeOpportunity`, `reassignOpportunity`); `features/opportunities/actions.test.ts` (14 tests, all passing)
+- **Opportunities: API + hooks** — `features/opportunities/api.ts` (`getOpportunities`, `getOpportunityById`, `getOpportunityProducts`, `getPipelineStages`, `getStaleOpportunities`); `features/opportunities/hooks.ts` (full query + mutation hooks with cache invalidation)
+- **Opportunities: column definitions** — `features/opportunities/columns.tsx` (`getOpportunityColumns(role, onWonSelected)` factory)
+- **date-fns** — installed as production dependency (used in column definitions for relative timestamps)
 
 ---
 
@@ -20,24 +32,16 @@ Nothing currently in progress.
 
 Dependencies flow top to bottom — each item can be started once the one above it is complete.
 
-### Foundation (do these first, every feature depends on them)
+### Opportunities UI (continue from data layer above)
 
-- **Supabase client helpers** — `lib/supabase/client.ts`, `lib/supabase/server.ts`, `lib/auth.ts` (session helpers + role utilities)
-- **Shared layout + auth shell** — `app/(auth)/login/page.tsx`, `app/(app)/layout.tsx` (sidebar, bottom tab bar for mobile, role-aware nav), middleware (`middleware.ts`) enforcing route-level RBAC
-- **Shared components** — `components/shared/DataTable.tsx` (generic TanStack Table wrapper), `components/shared/PageHeader.tsx`, `components/shared/InlineTextareaCell.tsx`, `components/shared/InlineStageCell.tsx`
-- **Constants** — `lib/constants.ts` (CURRENCIES list, enum display name mappings including `demo` → "Demo / Product Presentation")
-
-### Opportunities (core RSM workflow — implement this feature completely before moving on)
-
-- **Schemas + tests** — `features/opportunities/schemas.ts` (`opportunityRegisterSchema`, `opportunitySchema`, `opportunityProductSchema`), `features/opportunities/schemas.test.ts`
-- **Server Actions + tests** — `features/opportunities/actions.ts` (`createOpportunity`, `updateOpportunity`, `updateOpportunityStage`, `closeOpportunity`, `reassignOpportunity`), `features/opportunities/actions.test.ts`
-- **API + hooks** — `features/opportunities/api.ts`, `features/opportunities/hooks.ts`
-- **Column definitions** — `features/opportunities/columns.tsx` (factory function `getOpportunityColumns(role)`, inline-editable stage and next_step cells)
 - **Product Picker component** — `features/opportunities/components/ProductPicker.tsx` (line-item editor with catalog combobox, free-text fallback, manufacturer contact collapsible section)
-- **Close Deal modal** — `features/opportunities/components/CloseDealModal.tsx` (contract fields, client dedup preview, contact linking preview)
+- **Close Deal modal** — `features/opportunities/components/CloseDealModal.tsx` (contract fields, client dedup preview, contact linking preview; needs shadcn Dialog, Form components)
 - **List page** — `app/(app)/opportunities/page.tsx` (pipeline table, filters: search / stage / at-risk / sector, default excludes Won+Lost, "Show closed" toggle)
 - **New opportunity page** — `app/(app)/opportunities/new/page.tsx` (registration form using `opportunityRegisterSchema`)
 - **Detail page** — `app/(app)/opportunities/[id]/page.tsx` (sticky header with inline stage + at-risk, Next Step inline textarea, Prospect Details, Products, Activities feed, Contract section)
+
+**Required shadcn components to add before building opportunity pages:**
+`npx shadcn@latest add input textarea label badge dialog select command` (and any others discovered)
 
 ### Clients
 
@@ -93,5 +97,8 @@ Dependencies flow top to bottom — each item can be started once the one above 
 
 - The TDD rule applies to Schemas, Server Actions, and RLS only — not components or pages.
 - Foundation items (Supabase helpers, layout, middleware, shared components) have no tests — implement directly.
-- `closeOpportunity` is the most complex action: atomic Client dedup + Contract creation + Contact linking. Implement last within the Opportunities actions session and test it separately.
+- `closeOpportunity` is the most complex action: atomic Client dedup + Contract creation + Contact linking. ✅ Implemented and tested.
 - Recharts charts on Admin Dashboard are code-split (`dynamic(() => import(...), { ssr: false })`).
+- **Action test pattern:** action tests use `vi.mock('@/lib/supabase/server')` to inject a real `@supabase/supabase-js` client authenticated via `signInWithPassword`. This is NOT mocking Supabase — it's bypassing the Next.js cookie session plumbing while still using the real DB with RLS enforced.
+- **Zod v4 note:** UUIDs in test fixtures must be valid RFC-4122 format (version bits enforced). Nil UUID variants like `00000000-0000-0000-0000-000000000001` are rejected. Use properly-formatted v4 UUIDs.
+- **date-fns** installed as a production dependency.
