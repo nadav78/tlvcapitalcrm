@@ -19,7 +19,9 @@ const SUPABASE_URL = 'http://127.0.0.1:54321'
 const SERVICE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
 const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
 
-const clientOptions = { realtime: { transport: ws } }
+// ws satisfies Node's WebSocket API but its constructor signature diverges from
+// Supabase's WebSocketLikeConstructor — cast required for Node test environments.
+const clientOptions = { realtime: { transport: ws as unknown as typeof WebSocket } }
 
 // Service role client — bypasses RLS. Used for setup and teardown only.
 const serviceClient = createClient(SUPABASE_URL, SERVICE_KEY, clientOptions)
