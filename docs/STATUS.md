@@ -8,6 +8,14 @@ Nothing currently in progress.
 
 ## Completed
 
+- **Foundation — Supabase client helpers** — `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server + service role)
+- **Foundation — Auth helpers** — `lib/auth.ts` (`getCurrentUser`, `getCurrentUserRole`, `requireUser`, `requireRole`); `lib/types.ts` (`AppUser`, `UserRole`, `PipelineStage`)
+- **Foundation — Constants** — `lib/constants.ts` (`CURRENCIES`, all enum display name maps including `demo` → "Demo / Product Presentation")
+- **Foundation — Proxy (RBAC)** — `src/proxy.ts` enforces auth on all routes, admin-only on `/settings`, preserves `?next` redirect; Next.js 16 file naming (`proxy.ts`, not `middleware.ts`)
+- **Foundation — Auth shell** — `app/(auth)/layout.tsx`, `app/(auth)/login/page.tsx` + `LoginForm.tsx` (useActionState, server action `signIn`, `signOut`)
+- **Foundation — App shell** — `app/(app)/providers.tsx` (QueryClientProvider + Sonner Toaster), `app/(app)/layout.tsx` (fetches user, renders sidebar + mobile nav), `app/(app)/dashboard/page.tsx` (stub)
+- **Foundation — Sidebar + MobileNav** — `components/shared/Sidebar.tsx` (desktop, 240px, admin-only Settings link), `components/shared/MobileNav.tsx` (4-tab bottom bar + Sheet slide-over for full nav)
+- **Foundation — Shared components** — `DataTable.tsx` (TanStack Table wrapper: sort, pagination, skeleton loading, empty state), `PageHeader.tsx`, `InlineTextareaCell.tsx` (click-to-edit, blur/Cmd+Enter save), `InlineStageCell.tsx` (badge → popover stage picker, confirmation dialog for re-staging from Won/Lost)
 - **Database migrations** — all tables, enums, constraints, triggers (`supabase/migrations/`)
 - **RLS policies** — row-level security for all tables, all roles (`supabase/migrations/0009_rls.sql`, `0010_grants.sql`, `0011_contract_update_guard.sql`, `0012_bug_fixes.sql`)
 - **Seed data** — lookup tables populated (sectors, pipeline stages, advisors, regions) (`supabase/seed.sql`)
@@ -19,13 +27,6 @@ Nothing currently in progress.
 ## Not Started (suggested order)
 
 Dependencies flow top to bottom — each item can be started once the one above it is complete.
-
-### Foundation (do these first, every feature depends on them)
-
-- **Supabase client helpers** — `lib/supabase/client.ts`, `lib/supabase/server.ts`, `lib/auth.ts` (session helpers + role utilities)
-- **Shared layout + auth shell** — `app/(auth)/login/page.tsx`, `app/(app)/layout.tsx` (sidebar, bottom tab bar for mobile, role-aware nav), middleware (`middleware.ts`) enforcing route-level RBAC
-- **Shared components** — `components/shared/DataTable.tsx` (generic TanStack Table wrapper), `components/shared/PageHeader.tsx`, `components/shared/InlineTextareaCell.tsx`, `components/shared/InlineStageCell.tsx`
-- **Constants** — `lib/constants.ts` (CURRENCIES list, enum display name mappings including `demo` → "Demo / Product Presentation")
 
 ### Opportunities (core RSM workflow — implement this feature completely before moving on)
 
