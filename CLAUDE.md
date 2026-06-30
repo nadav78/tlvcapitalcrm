@@ -249,6 +249,20 @@ Access is enforced at two layers — both must be present:
 
 Never rely on only one layer.
 
+## Session Workflow
+
+`docs/STATUS.md` tracks what is complete, what is in progress, and what has not been started yet. It is not auto-loaded — read it only when you need it.
+
+**At the start of a session:**
+- If the user gives a specific task ("implement opportunities schemas"), start immediately — no need to read STATUS.md.
+- If the user gives an open-ended prompt ("continue", "pick up where we left off", "what should we do next"), read `docs/STATUS.md` first, then propose a scope for the session based on what is next and what can realistically be completed end-to-end.
+
+**At the end of a session (before creating the PR):**
+Update `docs/STATUS.md`:
+- Move completed items from "Not Started" → "Completed"
+- If work was interrupted mid-feature, write an "In Progress" entry with: which files were touched, what state they are in, and the exact next action needed. Be specific enough that a fresh session can resume without re-reading the code.
+- If nothing was left incomplete, clear the "In Progress" section.
+
 ## Branching and PRs
 
 Never commit directly to main. Before writing any code, check the current branch. If on main, create a branch first — without asking.
@@ -259,9 +273,10 @@ Branch naming:
 - `fix/short-description` — bug fixes
 
 At the end of any implementation session:
-1. Run `/code-review high` and fix any CONFIRMED findings
-2. Create a PR with `gh pr create`
-3. Merge with `gh pr merge --squash` once clean
+1. Update `docs/STATUS.md` (see Session Workflow above)
+2. Run `/code-review high` and fix any CONFIRMED findings
+3. Create a PR with `gh pr create`
+4. Merge with `gh pr merge --squash` once clean
 
 Skip the PR only for docs-only changes (CLAUDE.md, README, docs/).
 
