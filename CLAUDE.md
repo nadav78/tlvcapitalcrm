@@ -42,6 +42,14 @@ Every data table in the app uses TanStack Table. Column definitions live in `fea
 
 If you find yourself writing the same component twice — once for admin and once for RSM — you are doing it wrong. Use props, role checks, or column factory functions to handle differences within a single component.
 
+### 6. Never hand-roll a modal or confirmation dialog.
+
+Every modal, confirmation dialog, and alert dialog uses shadcn's `AlertDialog` (`components/ui/alert-dialog.tsx`) or `Dialog` (`components/ui/dialog.tsx`) — not a hand-rolled `fixed inset-0` overlay div. shadcn/Radix (or Base UI, per the current `components.json` style) primitives provide focus trapping, Escape-to-close, and ARIA roles for free; a hand-rolled overlay does not. If the needed primitive isn't in `components/ui/` yet, add it with `npx shadcn add <component>` before writing the dialog markup.
+
+### 7. Never validate a redirect target with a hand-rolled regex.
+
+Any redirect target that comes from user input (a query param, a form field, a stored "return to" path) must be validated with `safeRedirectPath` from `lib/redirect.ts` — never a regex prefix check. A regex that blocklists specific bypass sequences (e.g. a leading `//` or `/\`) is not sufficient: control characters like tab/CR/LF are stripped by URL parsers wherever they occur in the string (per the WHATWG URL spec), so a payload can still collapse into a protocol-relative URL after being accepted by the regex. `safeRedirectPath` resolves the value against a placeholder origin and rejects anything that doesn't resolve back to that same origin, which is robust to this class of bypass.
+
 ## Folder Structure
 
 ```
