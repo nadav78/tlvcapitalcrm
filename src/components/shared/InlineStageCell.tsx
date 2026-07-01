@@ -107,13 +107,15 @@ export function InlineStageCell({
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setPendingStage(null)}
-                className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
+                disabled={isPending}
+                className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmReStage}
-                className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
+                disabled={isPending}
+                className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 Confirm
               </button>

@@ -53,11 +53,11 @@ export async function middleware(request: NextRequest) {
   if (user && pathname.startsWith('/settings')) {
     const { data: profile } = await supabase
       .from('users')
-      .select('role')
+      .select('role, is_active')
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'admin') {
+    if (!profile?.is_active || profile.role !== 'admin') {
       return redirectWithSession(new URL('/dashboard', request.url), supabaseResponse)
     }
   }
