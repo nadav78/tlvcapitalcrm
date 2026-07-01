@@ -37,9 +37,11 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  // Unauthenticated → login
+  // Unauthenticated → login, preserving the originally requested path
   if (!user && !pathname.startsWith('/login')) {
-    return redirectWithSession(new URL('/login', request.url), supabaseResponse)
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('next', pathname)
+    return redirectWithSession(loginUrl, supabaseResponse)
   }
 
   // Authenticated → away from login
@@ -51,11 +53,11 @@ export async function middleware(request: NextRequest) {
   if (user && pathname.startsWith('/settings')) {
     const { data: profile } = await supabase
       .from('users')
-      .select('role')
+      .select('role, is_active')
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'admin') {
+    if (!profile?.is_active || profile.role !== 'admin') {
       return redirectWithSession(new URL('/dashboard', request.url), supabaseResponse)
     }
   }

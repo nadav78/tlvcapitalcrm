@@ -6,7 +6,7 @@ This document records the technical decisions made for this project, the reasoni
 
 ## Stack
 
-### Next.js 15 (App Router)
+### Next.js 16 (App Router)
 
 **Chosen over:** Vite + React (SPA)
 

@@ -1,10 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { signIn } from '@/features/auth/actions'
 import { Button } from '@/components/ui/button'
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  )
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams()
+  const next = searchParams.get('next') ?? undefined
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -15,7 +26,7 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
 
-    const result = await signIn({ email, password })
+    const result = await signIn({ email, password, next })
     // redirect() in the Server Action throws and never returns here on success
     if (result?.error) {
       setError(result.error)

@@ -22,6 +22,7 @@ export function InlineStageCell({
   onWonSelected,
 }: InlineStageCellProps) {
   const [open, setOpen] = useState(false)
+  const [pendingStage, setPendingStage] = useState<{ id: string; name: string } | null>(null)
   const { data: stages = [] } = usePipelineStages()
   const { mutate: updateStage, isPending } = useUpdateOpportunityStage()
 
@@ -31,14 +32,27 @@ export function InlineStageCell({
       return
     }
 
+    setOpen(false)
+
     if (targetStage.is_won) {
-      setOpen(false)
       onWonSelected?.(opportunityId)
       return
     }
 
+    // Confirm when re-staging away from a terminal state (Won/Lost)
+    if (isWon || isLost) {
+      setPendingStage(targetStage)
+      return
+    }
+
     updateStage({ opportunityId, stageId: targetStage.id })
-    setOpen(false)
+  }
+
+  function confirmReStage() {
+    if (pendingStage) {
+      updateStage({ opportunityId, stageId: pendingStage.id })
+      setPendingStage(null)
+    }
   }
 
   return (
@@ -77,6 +91,37 @@ export function InlineStageCell({
             ))}
           </div>
         </>
+      )}
+
+      {pendingStage && (
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-sm rounded-lg border border-border bg-popover p-4 shadow-lg">
+            <h2 className="text-sm font-semibold">
+              {isWon ? 'Reopen opportunity?' : 'Re-stage opportunity?'}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {isWon
+                ? `Reopening this opportunity will return it to "${pendingStage.name}". The existing Client record and Contract will not be removed — they remain linked. Contract terms can only be edited by an Admin.`
+                : `Returning this opportunity to "${pendingStage.name}". All existing data is preserved.`}
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setPendingStage(null)}
+                disabled={isPending}
+                className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmReStage}
+                disabled={isPending}
+                className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -351,3 +351,33 @@ describe('lookup table RLS', () => {
     await serviceClient.from('pipeline_stages').delete().eq('id', data![0].id)
   })
 })
+
+// ─── Deactivated users ────────────────────────────────────────────────────────
+
+describe('deactivated user RLS', () => {
+  it('auth_role() returns null for a deactivated user, blocking every role-gated policy', async () => {
+    await serviceClient.from('users').update({ is_active: false }).eq('id', rsmNorthUserId)
+    try {
+      const rsm = await clientAs('rls.rsm.north@test.local', PASSWORDS.rsm_north)
+      const { data, error } = await rsm.from('opportunities')
+        .select('id').eq('id', opportunityNorthId)
+      expect(error).toBeNull()
+      expect(data).toHaveLength(0)
+    } finally {
+      await serviceClient.from('users').update({ is_active: true }).eq('id', rsmNorthUserId)
+    }
+  })
+
+  it('a deactivated user can still read their own users row (unaffected by auth_role)', async () => {
+    await serviceClient.from('users').update({ is_active: false }).eq('id', rsmNorthUserId)
+    try {
+      const rsm = await clientAs('rls.rsm.north@test.local', PASSWORDS.rsm_north)
+      const { data, error } = await rsm.from('users').select('id, is_active').eq('id', rsmNorthUserId)
+      expect(error).toBeNull()
+      expect(data).toHaveLength(1)
+      expect(data![0].is_active).toBe(false)
+    } finally {
+      await serviceClient.from('users').update({ is_active: true }).eq('id', rsmNorthUserId)
+    }
+  })
+})
