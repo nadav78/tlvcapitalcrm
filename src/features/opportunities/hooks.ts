@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import {
   getOpportunities,
   getOpportunityById,
@@ -17,6 +17,7 @@ import {
   reassignOpportunity,
 } from './actions'
 import type { OpportunityRegisterValues, OpportunityValues, CloseDealValues } from './schemas'
+import type { Opportunity, PipelineStage } from './types'
 
 // ── Query keys ────────────────────────────────────────────────────────────────
 
@@ -75,6 +76,38 @@ export function useStaleOpportunities() {
   })
 }
 
+// ── Optimistic update helpers ─────────────────────────────────────────────────
+// Cards/tables read opportunities from the LIST query cache (opportunityKeys.lists()),
+// not a single detail object — so patching for an optimistic update means mapping
+// over every cached list array and replacing the one matching row.
+//
+// Rollback restores only the field(s) this mutation itself changed — applied on
+// top of whatever the cache currently looks like — rather than replacing the
+// whole cached array with a pre-mutation snapshot. Two inline cells on the same
+// row (stage, next_step) are independent mutations with independent isPending
+// flags, so they can be in flight at the same time; a whole-array snapshot
+// restore from one mutation's rollback would stomp the other mutation's
+// optimistic patch if it landed in between.
+
+function patchOpportunityInLists(
+  queryClient: QueryClient,
+  opportunityId: string,
+  patch: (opportunity: Opportunity) => Opportunity,
+) {
+  queryClient.setQueriesData<Opportunity[]>({ queryKey: opportunityKeys.lists() }, (old) =>
+    old?.map((opportunity) => (opportunity.id === opportunityId ? patch(opportunity) : opportunity)),
+  )
+}
+
+function findOpportunityInLists(queryClient: QueryClient, opportunityId: string): Opportunity | undefined {
+  const lists = queryClient.getQueriesData<Opportunity[]>({ queryKey: opportunityKeys.lists() })
+  for (const [, data] of lists) {
+    const match = data?.find((opportunity) => opportunity.id === opportunityId)
+    if (match) return match
+  }
+  return undefined
+}
+
 // ── Mutations ─────────────────────────────────────────────────────────────────
 
 export function useCreateOpportunity() {
@@ -102,7 +135,50 @@ export function useUpdateOpportunityStage() {
   return useMutation({
     mutationFn: ({ opportunityId, stageId }: { opportunityId: string; stageId: string }) =>
       updateOpportunityStage(opportunityId, stageId),
-    onSuccess: (_, { opportunityId }) => {
+    onMutate: async ({ opportunityId, stageId }) => {
+      await queryClient.cancelQueries({ queryKey: opportunityKeys.lists() })
+      const previous = findOpportunityInLists(queryClient, opportunityId)
+
+      const stages = queryClient.getQueryData<PipelineStage[]>(opportunityKeys.stages)
+      const targetStage = stages?.find((s) => s.id === stageId)
+
+      patchOpportunityInLists(queryClient, opportunityId, (opportunity) => ({
+        ...opportunity,
+        stage_id: stageId,
+        stage: targetStage
+          ? {
+              id: targetStage.id,
+              name: targetStage.name,
+              is_won: targetStage.is_won,
+              is_lost: targetStage.is_lost,
+              display_order: targetStage.display_order,
+            }
+          : opportunity.stage,
+      }))
+
+      return previous ? { previousStageId: previous.stage_id, previousStage: previous.stage } : undefined
+    },
+    onError: (_err, { opportunityId }, context) => {
+      if (!context) return
+      patchOpportunityInLists(queryClient, opportunityId, (opportunity) => ({
+        ...opportunity,
+        stage_id: context.previousStageId,
+        stage: context.previousStage,
+      }))
+    },
+    onSuccess: (data, { opportunityId }, context) => {
+      // Server Actions return { error } for business-rule failures rather than
+      // throwing, so a rejected update resolves onSuccess, not onError — the
+      // optimistic patch still needs rolling back in that case.
+      if ('error' in data && data.error && context) {
+        patchOpportunityInLists(queryClient, opportunityId, (opportunity) => ({
+          ...opportunity,
+          stage_id: context.previousStageId,
+          stage: context.previousStage,
+        }))
+      }
+    },
+    onSettled: (_data, _err, { opportunityId }) => {
       queryClient.invalidateQueries({ queryKey: opportunityKeys.detail(opportunityId) })
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() })
     },
@@ -117,7 +193,38 @@ export function useUpdateOpportunityField() {
         | { opportunityId: string; field: 'next_step'; value: string }
         | { opportunityId: string; field: 'is_at_risk'; value: boolean },
     ) => updateOpportunityField(input),
-    onSuccess: (_, { opportunityId }) => {
+    onMutate: async (vars) => {
+      await queryClient.cancelQueries({ queryKey: opportunityKeys.lists() })
+      const previous = findOpportunityInLists(queryClient, vars.opportunityId)
+
+      patchOpportunityInLists(queryClient, vars.opportunityId, (opportunity) =>
+        vars.field === 'next_step'
+          ? { ...opportunity, next_step: vars.value }
+          : { ...opportunity, is_at_risk: vars.value },
+      )
+
+      return previous
+        ? { previousNextStep: previous.next_step, previousIsAtRisk: previous.is_at_risk }
+        : undefined
+    },
+    onError: (_err, vars, context) => {
+      if (!context) return
+      patchOpportunityInLists(queryClient, vars.opportunityId, (opportunity) =>
+        vars.field === 'next_step'
+          ? { ...opportunity, next_step: context.previousNextStep }
+          : { ...opportunity, is_at_risk: context.previousIsAtRisk },
+      )
+    },
+    onSuccess: (data, vars, context) => {
+      if ('error' in data && data.error && context) {
+        patchOpportunityInLists(queryClient, vars.opportunityId, (opportunity) =>
+          vars.field === 'next_step'
+            ? { ...opportunity, next_step: context.previousNextStep }
+            : { ...opportunity, is_at_risk: context.previousIsAtRisk },
+        )
+      }
+    },
+    onSettled: (_data, _err, { opportunityId }) => {
       queryClient.invalidateQueries({ queryKey: opportunityKeys.detail(opportunityId) })
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() })
     },
