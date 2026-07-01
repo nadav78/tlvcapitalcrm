@@ -16,9 +16,10 @@ import type { UserRole } from '@/lib/auth'
 
 interface OpportunityListViewProps {
   role: UserRole
+  userSectorIds?: string[]
 }
 
-export function OpportunityListView({ role }: OpportunityListViewProps) {
+export function OpportunityListView({ role, userSectorIds }: OpportunityListViewProps) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [stageIds, setStageIds] = useState<string[]>([])
@@ -43,6 +44,17 @@ export function OpportunityListView({ role }: OpportunityListViewProps) {
       (o) => o.prospect_company_name.toLowerCase().includes(q) || o.country.toLowerCase().includes(q),
     )
   }, [opportunities, search])
+
+  // For sector managers: sort own-sector rows before others.
+  // Array.sort is stable so updated_at DESC order is preserved within each group.
+  const displayed = useMemo(() => {
+    if (!userSectorIds?.length) return filtered
+    return [...filtered].sort((a, b) => {
+      const aOwn = userSectorIds.includes(a.sector_id) ? 0 : 1
+      const bOwn = userSectorIds.includes(b.sector_id) ? 0 : 1
+      return aOwn - bOwn
+    })
+  }, [filtered, userSectorIds])
 
   const columns = useMemo(() => getOpportunityColumns(role, (id) => setClosingOpportunityId(id)), [role])
 
@@ -103,7 +115,7 @@ export function OpportunityListView({ role }: OpportunityListViewProps) {
             <div key={i} className="h-10 animate-pulse rounded-lg bg-muted/60" />
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : displayed.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border py-16 text-center">
           <p className="text-sm text-muted-foreground">No opportunities yet.</p>
           {canCreate && (
@@ -113,7 +125,7 @@ export function OpportunityListView({ role }: OpportunityListViewProps) {
           )}
         </div>
       ) : (
-        <DataTable columns={columns} data={filtered} onRowClick={(row) => router.push(`/opportunities/${row.id}`)} />
+        <DataTable columns={columns} data={displayed} onRowClick={(row) => router.push(`/opportunities/${row.id}`)} />
       )}
 
       {closingOpportunity && (
