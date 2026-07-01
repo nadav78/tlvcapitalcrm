@@ -50,6 +50,18 @@ Every modal, confirmation dialog, and alert dialog uses shadcn's `AlertDialog` (
 
 Any redirect target that comes from user input (a query param, a form field, a stored "return to" path) must be validated with `safeRedirectPath` from `lib/redirect.ts` — never a regex prefix check. A regex that blocklists specific bypass sequences (e.g. a leading `//` or `/\`) is not sufficient: control characters like tab/CR/LF are stripped by URL parsers wherever they occur in the string (per the WHATWG URL spec), so a payload can still collapse into a protocol-relative URL after being accepted by the regex. `safeRedirectPath` resolves the value against a placeholder origin and rejects anything that doesn't resolve back to that same origin, which is robust to this class of bypass.
 
+### 8. Never add optimistic updates to a mutation.
+
+Every `useMutation` waits for the server to confirm success before the UI reflects the change — no `onMutate` cache-patching, no assuming a write succeeded. The data in this CRM (deal values, stage changes, activities) is consequential enough that a failed optimistic update rolling back is worse than a brief, honest loading state. See ARCHITECTURE.md's "Feedback Pattern" section.
+
+### 9. `pipeline_stages.is_won` and `is_lost` are read-only display fields in any admin UI — never editable checkboxes.
+
+Changing which stage carries `is_won = true` silently changes which stage triggers Client + Contract creation on save — a bug here is invisible until someone notices deals aren't closing correctly. If this needs to change, it requires a separate, explicit Admin action with its own confirmation ("This will change which stage triggers Client and Contract creation. Existing Won deals are not affected."), not an inline edit on the stage's row. See ARCHITECTURE.md's "Flexibility Tradeoffs" section.
+
+### 10. Follow the Form Presentation table exactly — never a full page for an edit, never a modal with more than ~6 fields.
+
+Creating an Opportunity is a full page. Editing an Opportunity, Client, or Contact is a slide-over. A focused action (Log Activity, Close Deal, a destructive confirmation) is a modal. A high-frequency field (stage, next step, at-risk) is inline. Picking the wrong one of these for a new form is easy to do without noticing — see ARCHITECTURE.md's "Form Presentation" table before adding any new form.
+
 ## Folder Structure
 
 ```
