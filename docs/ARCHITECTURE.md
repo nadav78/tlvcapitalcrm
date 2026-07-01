@@ -904,6 +904,71 @@ features/opportunities/actions.test.ts   ← Server Action integration tests
 supabase/tests/rls.test.ts               ← RLS policy tests, one per table
 ```
 
+### Scripted Browser Verification (ad hoc, not per-feature)
+
+Most UI changes are verified by clicking through the feature in the browser
+by hand — that's the right default. It's fast, and the person testing knows
+what "correct" looks like for this domain better than a script would. This
+is not a replacement for that, and it is not something to reach for on every
+UI change — a straightforward slide-over or a single-role page is faster and
+just as reliable to click through manually.
+
+Reach for a scripted Playwright pass instead of (or in addition to) manual
+clicking when a change has:
+
+- **Multiple role-gated branches** — a form or page that behaves differently
+  for Admin vs. RSM vs. Sector Manager, or a route with a redirect guard.
+  Manually testing 3 logins × N branches is easy to under-cover; a script
+  exercises every branch every time it's run.
+- **Non-visual failure modes** — a React console warning (e.g. a controlled/
+  uncontrolled input switch) or a swallowed network error doesn't show up
+  just from looking at the screen; catching it requires checking the
+  console, which a quick manual pass often skips.
+
+**One-time setup (per machine):**
+
+- `playwright` is a devDependency; browsers must be cached locally:
+  `npx playwright install chromium`.
+- Some minimal container base images are missing `libasound.so.2`, which
+  Chromium's headless binary dynamically links even for headless-only runs.
+  `scripts/setup-browser-verification.sh` downloads and extracts it locally
+  (no root required) and prints the `LD_LIBRARY_PATH` export needed —
+  `source` it (not just execute) before running any Playwright script:
+  `source <(scripts/setup-browser-verification.sh)`.
+- Local Supabase must be running (`supabase start`). Persistent test
+  accounts already exist for this — `node scripts/seed-manual-test-users.mjs`
+  is idempotent and safe to re-run; it will not recreate accounts that
+  already exist. See that file for the current account list (one Admin, two
+  RSMs in different regions, one Sector Manager — all password `Test1234!`).
+- `scripts/playwright-helpers.mjs` exports `login(page, email)` and the base
+  URL — import it from a throwaway per-feature driver script rather than
+  re-deriving the login flow each time. Write that driver script somewhere
+  inside the repo (e.g. `scripts/.tmp-verify.mjs`, gitignored) — Node's ESM
+  resolver needs the importing file to be inside the repo tree to find
+  `node_modules/playwright`. Delete the driver script once you're done; it's
+  throwaway per feature, not a persistent artifact.
+
+**Base UI Select gotchas** (`components/ui/select.tsx` wraps
+`@base-ui/react/select`, not Radix — worth knowing since Base UI's behavior
+differs from the Radix conventions most examples assume):
+
+- A full-page screenshot (`{ fullPage: true }`) while a Select popup is open
+  closes it — the popup is anchored via floating-ui and reacts to the
+  scroll/reflow a full-page capture triggers. Use viewport-only screenshots
+  around open popups.
+- `[role="option"]` matches items belonging to *every* Select on the page,
+  not just the currently open one — Base UI appears to keep closed Selects'
+  items mounted-but-hidden in the DOM to pre-register their labels for
+  display. Scope option locators with `:visible`
+  (`page.locator('[role="option"]:visible')`), or use
+  `openOption(page)` from `playwright-helpers.mjs`.
+- A controlled Select's `value` prop must not be `undefined` on the first
+  render if it will hold a real value later — going from `undefined` to a
+  string trips React's "switching from uncontrolled to controlled" warning.
+  Default nullable fields to `null`, not `undefined`, and coerce at the JSX
+  call site (`value={field.value ?? null}`) rather than relying on React
+  Hook Form's `defaultValues` alone.
+
 ---
 
 ## Flexibility Tradeoffs

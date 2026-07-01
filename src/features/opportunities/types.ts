@@ -73,12 +73,24 @@ export interface PipelineStage {
   display_order: number
   is_won: boolean
   is_lost: boolean
+  is_default: boolean
   is_active: boolean
 }
 
 export interface Sector {
   id: string
   name: string
+}
+
+export interface Advisor {
+  id: string
+  name: string
+}
+
+export interface RsmUser {
+  id: string
+  full_name: string
+  region_id: string
 }
 
 export interface CloseDealInput {

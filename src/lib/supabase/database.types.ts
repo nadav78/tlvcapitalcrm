@@ -538,6 +538,7 @@ export type Database = {
           display_order: number
           id: string
           is_active: boolean
+          is_default: boolean
           is_lost: boolean
           is_won: boolean
           name: string
@@ -548,6 +549,7 @@ export type Database = {
           display_order: number
           id?: string
           is_active?: boolean
+          is_default?: boolean
           is_lost?: boolean
           is_won?: boolean
           name: string
@@ -558,6 +560,7 @@ export type Database = {
           display_order?: number
           id?: string
           is_active?: boolean
+          is_default?: boolean
           is_lost?: boolean
           is_won?: boolean
           name?: string

@@ -46,3 +46,9 @@ INTERVIEW_PREP.md
 # claude code (local, machine-specific)
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# scripted browser verification (see docs/ARCHITECTURE.md) — locally
+# extracted system libs, machine-specific
+/.playwright-libs
+# throwaway per-feature Playwright driver scripts (scripts/playwright-helpers.mjs)
+/scripts/.tmp-*.mjs

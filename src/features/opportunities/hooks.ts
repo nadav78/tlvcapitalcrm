@@ -7,6 +7,8 @@ import {
   getOpportunityProducts,
   getPipelineStages,
   getSectors,
+  getAdvisors,
+  getRsmUsers,
   getCloseDealPreview,
   getStaleOpportunities,
 } from './api'
@@ -31,6 +33,8 @@ export const opportunityKeys = {
   products: (id: string) => [...opportunityKeys.all, 'products', id] as const,
   stages: ['pipeline_stages'] as const,
   sectors: ['sectors'] as const,
+  advisors: ['advisors'] as const,
+  rsmUsers: ['users', 'rsm'] as const,
   stale: ['opportunities', 'stale'] as const,
   closeDealPreview: (opportunityId: string) => ['opportunities', 'close-deal-preview', opportunityId] as const,
 }
@@ -79,6 +83,24 @@ export function useSectors(enabled = true) {
     queryKey: opportunityKeys.sectors,
     queryFn: getSectors,
     staleTime: 5 * 60 * 1000, // Sectors rarely change — 5-minute cache
+    enabled,
+  })
+}
+
+export function useAdvisors() {
+  return useQuery({
+    queryKey: opportunityKeys.advisors,
+    queryFn: getAdvisors,
+    staleTime: 5 * 60 * 1000, // Advisors rarely change — 5-minute cache
+  })
+}
+
+// Admin-only — see getRsmUsers. `enabled` lets callers skip the query
+// entirely for RSM/Sector Manager, who never render an RSM picker.
+export function useRsmUsers(enabled: boolean) {
+  return useQuery({
+    queryKey: opportunityKeys.rsmUsers,
+    queryFn: getRsmUsers,
     enabled,
   })
 }
