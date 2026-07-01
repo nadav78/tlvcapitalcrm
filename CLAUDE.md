@@ -308,7 +308,7 @@ At the end of any implementation session:
    - **Low-risk** — docs-only changes, dependency-following refactors (e.g. swapping hand-rolled markup for an existing shadcn/library component with no logic change), mechanical extractions, config/rule updates: skip review and merge directly with `gh pr merge --squash` once step 2 is clean.
    - **Needs review** — new business logic, anything touching auth/RLS/security, migrations, non-mechanical logic changes: do **not** run `/code-review` in this same session. A review run by the session that just wrote the code shares its blind spots — the point of a review is an independent pass. Instead, leave the PR open, tell the user a review is recommended, and let them run `/code-review` (or `/code-review ultra`) from a fresh session. Do not merge an unreviewed needs-review PR yourself.
 
-Skip the PR only for docs-only changes (CLAUDE.md, README, docs/).
+Skip the PR only for docs-only changes (CLAUDE.md, README, docs/, .gitignore).
 
 ## Commands
 
