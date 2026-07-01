@@ -265,7 +265,13 @@ Update `docs/STATUS.md`:
 
 ## Branching and PRs
 
-Never commit directly to main. Before writing any code, check the current branch. If on main, create a branch first — without asking.
+Never commit directly to main. Before writing any code:
+
+1. Sync first — `git fetch origin && git checkout main && git pull --ff-only`. Never branch from a stale local `main`, an old commit, or another feature branch. (Stash or commit whatever is on the current branch first if it's uncommitted work worth keeping.)
+2. Check for in-flight overlap — `gh pr list --state open` and the "In Progress" section of `docs/STATUS.md` (read fresh from the just-pulled `main`, not from an old branch's copy — a branch's own `STATUS.md` is frozen at the moment it forked and will not reflect work merged since). If an open PR already covers the scope about to be started, do not start a parallel implementation of it — extend that PR's branch, or wait for it to merge and branch from the result.
+3. If on main, create a branch first — without asking.
+
+A merge conflict against `main` on a file you didn't expect to touch is a signal, not just an obstacle: before resolving it, run `git log main ^$(git merge-base main HEAD)` to check whether someone else's PR already implemented the same thing on that file. Resolving the conflict blindly (favoring one side) can silently discard a fix or re-bury a duplicated effort instead of surfacing it.
 
 Branch naming:
 - `feat/short-description` — new features or pages
