@@ -521,6 +521,45 @@ Do not auto-save on RSM dropdown change. Require an explicit confirm click.
 
 ---
 
+### Confirmation Dialogs
+
+Every confirmation dialog in the app — re-staging away from Won/Lost, RSM reassignment, or any future "confirm before a consequential change" prompt — is built with shadcn's `AlertDialog` (`components/ui/alert-dialog.tsx`), not a hand-rolled `fixed inset-0` overlay div. `InlineStageCell`'s re-stage confirmation is the reference implementation:
+
+```typescript
+<AlertDialog open={!!pendingStage} onOpenChange={(open) => { if (!open) setPendingStage(null) }}>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>{/* ... */}</AlertDialogTitle>
+      <AlertDialogDescription>{/* ... */}</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+      <AlertDialogAction disabled={isPending} onClick={confirm}>Confirm</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+**Why not a hand-rolled overlay:** the project adopted shadcn specifically because its primitives (Radix, or Base UI depending on the `components.json` style in use) handle focus trapping, Escape-to-close, and ARIA roles correctly by default (see the shadcn/ui entry under Stack). A hand-rolled `<div className="fixed inset-0">` has none of that, and duplicating the overlay/positioning markup per dialog means fixing an accessibility gap requires finding and patching every hand-rolled instance instead of one shared component.
+
+**Always disable Cancel/Confirm while the mutation is in flight** (`disabled={isPending}`) — otherwise a fast double-click can fire the mutation twice before the dialog unmounts.
+
+---
+
+### Safe Redirect Targets
+
+Any Server Action or route handler that redirects to a target read from user input (a `?next=` query param, a stored "return to" path, etc.) must validate it with `safeRedirectPath` from `lib/redirect.ts`:
+
+```typescript
+import { safeRedirectPath } from '@/lib/redirect'
+
+redirect(safeRedirectPath(input.next) ?? '/dashboard')
+```
+
+**Why not a regex prefix check:** an earlier version of this guard used `/^\/(?!\/|\\)/.test(next)` to reject a leading `//` or `/\`. That blocklist is incomplete — control characters (tab, CR, LF) are stripped by URL parsers wherever they occur in the string (per the WHATWG URL spec), not just at the edges, so a payload like `/\t/evil.com` passes the regex and still collapses to `//evil.com` once a browser parses the redirect. `safeRedirectPath` instead resolves the value against a placeholder origin and rejects it unless the origin is unchanged — the same technique OWASP recommends for open-redirect prevention — which is robust to any character-stripping quirk a URL parser applies, not just the two sequences a regex happens to enumerate.
+
+---
+
 ### What Is Deliberately Not Used
 
 | Pattern | Why not |

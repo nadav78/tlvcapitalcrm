@@ -3,6 +3,16 @@
 import { useState } from 'react'
 import { useUpdateOpportunityStage, usePipelineStages } from '@/features/opportunities/hooks'
 import { cn } from '@/lib/utils'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface InlineStageCellProps {
   opportunityId: string
@@ -93,36 +103,31 @@ export function InlineStageCell({
         </>
       )}
 
-      {pendingStage && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-sm rounded-lg border border-border bg-popover p-4 shadow-lg">
-            <h2 className="text-sm font-semibold">
+      <AlertDialog
+        open={!!pendingStage}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) setPendingStage(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
               {isWon ? 'Reopen opportunity?' : 'Re-stage opportunity?'}
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               {isWon
-                ? `Reopening this opportunity will return it to "${pendingStage.name}". The existing Client record and Contract will not be removed — they remain linked. Contract terms can only be edited by an Admin.`
-                : `Returning this opportunity to "${pendingStage.name}". All existing data is preserved.`}
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => setPendingStage(null)}
-                disabled={isPending}
-                className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmReStage}
-                disabled={isPending}
-                className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                ? `Reopening this opportunity will return it to "${pendingStage?.name}". The existing Client record and Contract will not be removed — they remain linked. Contract terms can only be edited by an Admin.`
+                : `Returning this opportunity to "${pendingStage?.name}". All existing data is preserved.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={isPending} onClick={confirmReStage}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
