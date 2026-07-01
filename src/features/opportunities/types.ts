@@ -81,6 +81,22 @@ export interface Sector {
   name: string
 }
 
+export interface Region {
+  id: string
+  name: string
+}
+
+export interface Advisor {
+  id: string
+  name: string
+}
+
+export interface RsmUser {
+  id: string
+  full_name: string
+  region_id: string
+}
+
 export interface CloseDealInput {
   contract_value: number
   currency: Currency

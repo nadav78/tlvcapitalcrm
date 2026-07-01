@@ -1,6 +1,15 @@
 import { createClient } from '@/lib/supabase/client'
 import { escapeIlikePattern } from '@/lib/utils'
-import type { Opportunity, OpportunityProduct, PipelineStage, Sector, CloseDealPreview } from './types'
+import type {
+  Opportunity,
+  OpportunityProduct,
+  PipelineStage,
+  Sector,
+  Region,
+  Advisor,
+  RsmUser,
+  CloseDealPreview,
+} from './types'
 
 // Select fragment shared across list and detail queries
 const OPPORTUNITY_SELECT = `
@@ -113,6 +122,46 @@ export async function getSectors(): Promise<Sector[]> {
 
   if (error) throw error
   return (data ?? []) as Sector[]
+}
+
+export async function getRegions(): Promise<Region[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('regions')
+    .select('id, name')
+    .eq('is_active', true)
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []) as Region[]
+}
+
+export async function getAdvisors(): Promise<Advisor[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('advisors')
+    .select('id, name')
+    .eq('is_active', true)
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []) as Advisor[]
+}
+
+// Admin-only lookup for the "New Opportunity" RSM picker. RLS on `users`
+// restricts reads to the caller's own row unless they're an Admin, so this
+// is only meaningful (and only called) when the caller is an Admin.
+export async function getRsmUsers(): Promise<RsmUser[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, full_name, region_id')
+    .eq('role', 'rsm')
+    .eq('is_active', true)
+    .order('full_name', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []) as RsmUser[]
 }
 
 // Read-only mirror of the dedup checks closeOpportunity performs server-side —

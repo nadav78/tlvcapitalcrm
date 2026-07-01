@@ -303,8 +303,9 @@ Branch naming:
 At the end of any implementation session:
 1. Update `docs/STATUS.md` (see Session Workflow above)
 2. Make sure `npx tsc --noEmit`, `npm test`, and `npm run build` are clean
-3. Create a PR with `gh pr create`
-4. Decide whether the change needs review before merging:
+3. For UI changes: if the feature has multiple role-gated branches (different behavior for Admin/RSM/Sector Manager, a redirect guard) or a failure mode that wouldn't show up just by looking at the screen (a React console warning, a swallowed network error), suggest running a scripted Playwright verification pass before opening the PR — don't just assume the user's own manual click-through covered every branch. See `docs/ARCHITECTURE.md`'s "Scripted Browser Verification" section for setup and when this is (and isn't) worth the cost. This is a suggestion to raise, not something to run unprompted on every UI change — most UI changes are fine verified by hand.
+4. Create a PR with `gh pr create`
+5. Decide whether the change needs review before merging:
    - **Low-risk** — docs-only changes, dependency-following refactors (e.g. swapping hand-rolled markup for an existing shadcn/library component with no logic change), mechanical extractions, config/rule updates: skip review and merge directly with `gh pr merge --squash` once step 2 is clean.
    - **Needs review** — new business logic, anything touching auth/RLS/security, migrations, non-mechanical logic changes: do **not** run `/code-review` in this same session. A review run by the session that just wrote the code shares its blind spots — the point of a review is an independent pass. Instead, leave the PR open, tell the user a review is recommended, and let them run `/code-review` (or `/code-review ultra`) from a fresh session. Do not merge an unreviewed needs-review PR yourself.
 
