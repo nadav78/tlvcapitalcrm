@@ -37,9 +37,11 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  // Unauthenticated → login
+  // Unauthenticated → login, preserving the originally requested path
   if (!user && !pathname.startsWith('/login')) {
-    return redirectWithSession(new URL('/login', request.url), supabaseResponse)
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('next', pathname)
+    return redirectWithSession(loginUrl, supabaseResponse)
   }
 
   // Authenticated → away from login

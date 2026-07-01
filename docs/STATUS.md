@@ -9,16 +9,16 @@ Nothing currently in progress.
 ## Completed
 
 - **Database migrations** — all tables, enums, constraints, triggers (`supabase/migrations/`)
-- **RLS policies** — row-level security for all tables, all roles (`supabase/migrations/0009_rls.sql`, `0010_grants.sql`, `0011_contract_update_guard.sql`, `0012_bug_fixes.sql`)
+- **RLS policies** — row-level security for all tables, all roles (`supabase/migrations/0009_rls.sql`, `0010_grants.sql`, `0011_contract_update_guard.sql`, `0012_bug_fixes.sql`, `0013_auth_role_active_check.sql` — `auth_role()` now excludes deactivated (`is_active = false`) users, closing a gap where a deactivated user's JWT still passed every RLS policy)
 - **Seed data** — lookup tables populated (sectors, pipeline stages, advisors, regions) (`supabase/seed.sql`)
 - **RLS integration tests** — full test suite verifying policies per role (`supabase/tests/rls.test.ts`)
 - **Project tooling** — Next.js 15, Supabase client, shadcn/ui, TanStack Query/Table, React Hook Form, Zod, Vitest configured
 - **Foundation: Supabase clients** — `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server + service role; supports `SUPABASE_TEST_TOKEN` for action tests)
 - **Foundation: Auth helpers** — `lib/auth.ts` (`getUserProfile`, `requireAuth`, `UserProfile` type)
 - **Foundation: Constants** — `lib/constants.ts` (CURRENCIES, all enum display-name maps)
-- **Foundation: Middleware** — `middleware.ts` (auth redirect + admin-only `/settings` guard; all redirects propagate rotated Supabase session cookies via `redirectWithSession` helper)
+- **Foundation: Middleware** — `middleware.ts` (auth redirect + admin-only `/settings` guard; all redirects propagate rotated Supabase session cookies via `redirectWithSession` helper; unauthenticated redirects now preserve the originally requested path as `?next=`, consumed by `signIn` in `features/auth/actions.ts` and read via `useSearchParams` in `app/(auth)/login/page.tsx`)
 - **Foundation: App shell** — `app/(auth)/layout.tsx`, `app/(auth)/login/page.tsx`, `app/(app)/layout.tsx` (sidebar + mobile tab bar), `app/(app)/dashboard/page.tsx` (placeholder)
-- **Foundation: Shared components** — `components/shared/DataTable.tsx` (generic TanStack Table wrapper), `components/shared/PageHeader.tsx`, `components/shared/InlineTextareaCell.tsx`, `components/shared/InlineStageCell.tsx`, `components/shared/Sidebar.tsx`, `components/shared/QueryProvider.tsx`
+- **Foundation: Shared components** — `components/shared/DataTable.tsx` (generic TanStack Table wrapper), `components/shared/PageHeader.tsx`, `components/shared/InlineTextareaCell.tsx`, `components/shared/InlineStageCell.tsx` (now shows a confirmation dialog when re-staging away from a Won/Lost opportunity, per `docs/ARCHITECTURE.md`), `components/shared/Sidebar.tsx`, `components/shared/QueryProvider.tsx`
 - **Opportunities: types** — `features/opportunities/types.ts`
 - **Opportunities: schemas + tests** — `features/opportunities/schemas.ts` (`opportunityRegisterSchema`, `opportunitySchema`, `opportunityProductSchema`, `closeDealSchema`); `features/opportunities/schemas.test.ts` (38 tests, all passing)
 - **Opportunities: actions + tests** — `features/opportunities/actions.ts` (`createOpportunity`, `updateOpportunity`, `updateOpportunityStage`, `updateOpportunityField`, `closeOpportunity`, `reassignOpportunity`); `features/opportunities/actions.test.ts` (14 tests, all passing); code-reviewed and patched: sector_manager explicit guard, `closeOpportunity` idempotency check on contract insert, `updateOpportunityField` discriminated union type
@@ -102,4 +102,5 @@ Dependencies flow top to bottom — each item can be started once the one above 
 - **Action test pattern:** action tests use `vi.mock('@/lib/supabase/server')` to inject a real `@supabase/supabase-js` client authenticated via `signInWithPassword`. This is NOT mocking Supabase — it's bypassing the Next.js cookie session plumbing while still using the real DB with RLS enforced.
 - **Zod v4 note:** UUIDs in test fixtures must be valid RFC-4122 format (version bits enforced). Nil UUID variants like `00000000-0000-0000-0000-000000000001` are rejected. Use properly-formatted v4 UUIDs.
 - **date-fns** installed as a production dependency.
-- **PR #1** — `feat/foundation-and-opportunities` open at https://github.com/nadav78/tlvcapitalcrm/pull/1. Covers all Foundation + Opportunities data layer items above. 71/71 tests pass.
+- **PR #1** — `feat/foundation-and-opportunities`, merged at https://github.com/nadav78/tlvcapitalcrm/pull/1. Covers all Foundation + Opportunities data layer items above. 71/71 tests pass.
+- **PR #2** (`feat/foundation`) was closed without merging. It was branched from the same commit as `feat/foundation-and-opportunities` (before PR #1 merged) and independently re-implemented the same foundation layer — two parallel sessions doing overlapping work that was never reconciled, so PR #2 was purely conflicting with no new feature coverage over PR #1. Its review found 6 real issues; 3 were specific to code only PR #2 had (already fixed on that branch, discarded with the close). The 3 that also applied to `main`'s implementation were ported directly: the `is_active` RLS gap (`0013_auth_role_active_check.sql`), the `?next` redirect preservation, and the Won/Lost re-staging confirmation dialog (see entries above).
