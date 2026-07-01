@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import { MultiSelectFilter } from '@/components/shared/MultiSelectFilter'
+import { ToggleFilterChip } from '@/components/shared/ToggleFilterChip'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { getOpportunityColumns } from '@/features/opportunities/columns'
 import { useOpportunities, usePipelineStages, useSectors } from '@/features/opportunities/hooks'
 import { CloseDealModal } from './CloseDealModal'
@@ -29,7 +29,9 @@ export function OpportunityListView({ role, userSectorIds }: OpportunityListView
   const [closingOpportunityId, setClosingOpportunityId] = useState<string | null>(null)
 
   const { data: stages = [] } = usePipelineStages()
-  const { data: sectors = [] } = useSectors()
+  // Sector filter is Admin/Sector Manager only (see below) — skip the query
+  // entirely for RSMs, who never render it.
+  const { data: sectors = [] } = useSectors(role !== 'rsm')
   const { data: opportunities = [], isLoading } = useOpportunities({
     includeWonLost: showClosed,
     stageIds: stageIds.length ? stageIds : undefined,
@@ -64,19 +66,18 @@ export function OpportunityListView({ role, userSectorIds }: OpportunityListView
 
   // Sector Managers have read-only pipeline access — see PRODUCT.md §6
   const canCreate = role !== 'sector_manager'
+  const newOpportunityLink = canCreate && (
+    <Link href="/opportunities/new" className={buttonVariants({ variant: 'default' })}>
+      New Opportunity
+    </Link>
+  )
 
   return (
     <div className="p-6">
       <PageHeader
         title="Opportunities"
         description="The pipeline of deals currently being pursued."
-        actions={
-          canCreate && (
-            <Link href="/opportunities/new" className={buttonVariants({ variant: 'default' })}>
-              New Opportunity
-            </Link>
-          )
-        }
+        actions={newOpportunityLink}
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -101,12 +102,8 @@ export function OpportunityListView({ role, userSectorIds }: OpportunityListView
             onChange={setSectorIds}
           />
         )}
-        <button type="button" onClick={() => setAtRiskOnly((v) => !v)}>
-          <Badge variant={atRiskOnly ? 'destructive' : 'outline'}>At Risk</Badge>
-        </button>
-        <button type="button" onClick={() => setShowClosed((v) => !v)}>
-          <Badge variant={showClosed ? 'secondary' : 'outline'}>Show closed</Badge>
-        </button>
+        <ToggleFilterChip label="At Risk" pressed={atRiskOnly} onPressedChange={setAtRiskOnly} activeVariant="destructive" />
+        <ToggleFilterChip label="Show closed" pressed={showClosed} onPressedChange={setShowClosed} />
       </div>
 
       {isLoading ? (
@@ -118,11 +115,7 @@ export function OpportunityListView({ role, userSectorIds }: OpportunityListView
       ) : displayed.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border py-16 text-center">
           <p className="text-sm text-muted-foreground">No opportunities yet.</p>
-          {canCreate && (
-            <Link href="/opportunities/new" className={buttonVariants({ variant: 'default' })}>
-              New Opportunity
-            </Link>
-          )}
+          {newOpportunityLink}
         </div>
       ) : (
         <DataTable columns={columns} data={displayed} onRowClick={(row) => router.push(`/opportunities/${row.id}`)} />

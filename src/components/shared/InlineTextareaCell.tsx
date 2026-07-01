@@ -39,6 +39,9 @@ export function InlineTextareaCell({ opportunityId, field, value }: InlineTextar
     }
   }
 
+  // Stop propagation: this cell renders inside table rows that may have their
+  // own onRowClick handler (see DataTable) — without this, starting an edit
+  // (or clicking inside the textarea) also navigates away via the row click.
   if (editing) {
     return (
       <textarea
@@ -47,6 +50,7 @@ export function InlineTextareaCell({ opportunityId, field, value }: InlineTextar
         onChange={(e) => setDraft(e.target.value)}
         onBlur={save}
         onKeyDown={handleKeyDown}
+        onClick={(e) => e.stopPropagation()}
         rows={3}
         disabled={isPending}
         className="w-full min-w-[200px] rounded border border-ring bg-background px-2 py-1.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
@@ -56,7 +60,10 @@ export function InlineTextareaCell({ opportunityId, field, value }: InlineTextar
 
   return (
     <button
-      onClick={startEdit}
+      onClick={(e) => {
+        e.stopPropagation()
+        startEdit()
+      }}
       className="w-full text-left text-sm truncate max-w-[280px] text-muted-foreground hover:text-foreground transition-colors"
       title={value ?? undefined}
     >

@@ -74,11 +74,12 @@ export function usePipelineStages() {
   })
 }
 
-export function useSectors() {
+export function useSectors(enabled = true) {
   return useQuery({
     queryKey: opportunityKeys.sectors,
     queryFn: getSectors,
     staleTime: 5 * 60 * 1000, // Sectors rarely change — 5-minute cache
+    enabled,
   })
 }
 
@@ -90,11 +91,13 @@ export function useStaleOpportunities() {
 }
 
 // Best-effort preview for the Close Deal modal — see getCloseDealPreview.
-export function useCloseDealPreview(opportunity: Opportunity | null) {
+// The Close Deal modal only ever mounts with a concrete opportunity (it's a
+// required prop on CloseDealModal), so this takes a required Opportunity
+// rather than modeling a null case no caller uses.
+export function useCloseDealPreview(opportunity: Opportunity) {
   return useQuery({
-    queryKey: opportunityKeys.closeDealPreview(opportunity?.id ?? ''),
-    queryFn: () => getCloseDealPreview(opportunity!),
-    enabled: !!opportunity,
+    queryKey: opportunityKeys.closeDealPreview(opportunity.id),
+    queryFn: () => getCloseDealPreview(opportunity),
   })
 }
 

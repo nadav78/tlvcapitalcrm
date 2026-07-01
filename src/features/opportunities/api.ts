@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import { escapeIlikePattern } from '@/lib/utils'
 import type { Opportunity, OpportunityProduct, PipelineStage, Sector, CloseDealPreview } from './types'
 
 // Select fragment shared across list and detail queries
@@ -128,15 +129,25 @@ export async function getCloseDealPreview(
 ): Promise<CloseDealPreview> {
   const supabase = createClient()
 
-  const { data: existingClients, error: clientError } = await supabase
-    .from('clients')
-    .select('id, name')
-    .eq('region_id', opportunity.region_id)
-    .ilike('name', opportunity.prospect_company_name)
-    .limit(1)
-  if (clientError) throw clientError
+  // Client lookup and pre-Win contacts are independent of each other — run
+  // them concurrently instead of sequentially.
+  const [clientResult, preWinResult] = await Promise.all([
+    supabase
+      .from('clients')
+      .select('id, name')
+      .eq('region_id', opportunity.region_id)
+      .ilike('name', escapeIlikePattern(opportunity.prospect_company_name))
+      .limit(1),
+    supabase
+      .from('contacts')
+      .select('id, full_name')
+      .eq('opportunity_id', opportunity.id)
+      .is('client_id', null),
+  ])
+  if (clientResult.error) throw clientResult.error
+  if (preWinResult.error) throw preWinResult.error
 
-  const existingClient = existingClients?.[0] ?? null
+  const existingClient = clientResult.data?.[0] ?? null
 
   let willCreateContact = false
   if (opportunity.prospect_contact_name) {
@@ -145,7 +156,7 @@ export async function getCloseDealPreview(
         .from('contacts')
         .select('id')
         .eq('client_id', existingClient.id)
-        .ilike('email', opportunity.prospect_contact_email)
+        .ilike('email', escapeIlikePattern(opportunity.prospect_contact_email))
         .maybeSingle()
       if (contactError) throw contactError
       willCreateContact = !existingContact
@@ -154,17 +165,10 @@ export async function getCloseDealPreview(
     }
   }
 
-  const { data: preWinContacts, error: preWinError } = await supabase
-    .from('contacts')
-    .select('id, full_name')
-    .eq('opportunity_id', opportunity.id)
-    .is('client_id', null)
-  if (preWinError) throw preWinError
-
   return {
     existingClient,
     willCreateContact,
-    preWinContacts: preWinContacts ?? [],
+    preWinContacts: preWinResult.data ?? [],
   }
 }
 
