@@ -168,6 +168,31 @@ Components depend on hooks, not on Supabase. Hooks depend on `api.ts` functions.
 
 TypeScript types are scoped to their context. A form's type (`OpportunityFormValues`) contains only the fields the form edits — not the full database record with computed fields, foreign keys, and admin-only columns. A component that renders a client name doesn't receive the full `Client` type.
 
+### Render Purity (React Compiler)
+
+React Compiler is enabled (via `eslint-plugin-react-hooks`'s `react-hooks/purity` rule, which runs as an `error`, not a warning). It flags impure functions — `Date.now()`, `Math.random()`, `crypto.randomUUID()`, etc. — called directly in a component's render body, because a compiler-memoized component could otherwise return stale or inconsistent output across calls with the same props.
+
+The fix is never to suppress the rule — capture the impure value once via a lazy `useState` initializer instead:
+
+```typescript
+// Wrong — Date.now() called directly during render
+function LastActivityCell({ value }: { value: string | null }) {
+  const daysAgo = (Date.now() - new Date(value).getTime()) / (1000 * 60 * 60 * 24)
+  // ...
+}
+
+// Right — captured once, satisfies react-hooks/purity
+function LastActivityCell({ value }: { value: string | null }) {
+  const [now] = useState(() => Date.now())
+  const daysAgo = (now - new Date(value).getTime()) / (1000 * 60 * 60 * 24)
+  // ...
+}
+```
+
+This pattern already applies in `features/opportunities/columns.tsx`'s `LastActivityCell`. It will come up again anywhere a "days ago" / "N minutes ago" style cell gets added — the Contacts list's `last_activity_at` column (ARCHITECTURE.md's "Contacts Page" section) and any future dashboard "stale" indicators are the most likely next occurrences. Since a component like this only re-renders when its data actually refetches (not on a timer), capturing `now` once at mount doesn't change the effective freshness of the label — it's not a behavior tradeoff, just satisfying the purity rule.
+
+`npm run lint` treating this as an `error` (not a `warning`) means an unaddressed instance fails CI-equivalent local checks even though `npx tsc --noEmit`, `npm test`, and `npm run build` all stay green regardless — the Next.js build does not run this ESLint rule as a gate. Don't rely on `build` passing as proof `lint` is clean; run both.
+
 ---
 
 ## Data Flow
