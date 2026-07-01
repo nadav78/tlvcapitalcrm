@@ -52,3 +52,6 @@ INTERVIEW_PREP.md
 /.playwright-libs
 # throwaway per-feature Playwright driver scripts (scripts/playwright-helpers.mjs)
 /scripts/.tmp-*.mjs
+# raw screenshots captured by a scripted verification pass (writeFlowReport's
+# JSON summaries persist and are not ignored; the images themselves are not)
+/docs/**/.captures/

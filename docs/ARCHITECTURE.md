@@ -947,6 +947,19 @@ clicking when a change has:
   resolver needs the importing file to be inside the repo tree to find
   `node_modules/playwright`. Delete the driver script once you're done; it's
   throwaway per feature, not a persistent artifact.
+- The same file also exports diagnostic-capture helpers for passes that need
+  to prove *absence* of a problem, not just walk a happy path:
+  `attachDiagnostics(page)` wires `console` (warnings/errors only),
+  `pageerror`, `requestfailed`, and non-2xx `response` listeners and returns
+  an accumulator object (`{ consoleMessages, pageErrors, failedRequests }`)
+  a driver script can inspect or dump at the end of a flow.
+  `screenshotStep(page, outDir, stepName)` saves a numbered, viewport-only
+  PNG (never `fullPage: true` — see the Select popup gotcha below) into
+  `outDir`, creating it if needed. `writeFlowReport(outDir, flowName, report)`
+  writes a JSON summary so the evidence persists after the throwaway driver
+  script that produced it is deleted — call this if the verification pass
+  needs to leave a record behind (e.g. a future UX/product review), not for
+  an ordinary one-off bug-hunting pass where the terminal output is enough.
 
 **Base UI Select gotchas** (`components/ui/select.tsx` wraps
 `@base-ui/react/select`, not Radix — worth knowing since Base UI's behavior
