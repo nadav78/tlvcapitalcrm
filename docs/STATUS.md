@@ -24,9 +24,17 @@ Nothing currently in progress.
 - **Opportunities: types** — `features/opportunities/types.ts`
 - **Opportunities: schemas + tests** — `features/opportunities/schemas.ts` (`opportunityRegisterSchema`, `opportunitySchema`, `opportunityProductSchema`, `closeDealSchema`); `features/opportunities/schemas.test.ts` (38 tests, all passing)
 - **Opportunities: actions + tests** — `features/opportunities/actions.ts` (`createOpportunity`, `updateOpportunity`, `updateOpportunityStage`, `updateOpportunityField`, `closeOpportunity`, `reassignOpportunity`); `features/opportunities/actions.test.ts` (14 tests, all passing); code-reviewed and patched: sector_manager explicit guard, `closeOpportunity` idempotency check on contract insert, `updateOpportunityField` discriminated union type
-- **Opportunities: API + hooks** — `features/opportunities/api.ts` (`getOpportunities`, `getOpportunityById`, `getOpportunityProducts`, `getPipelineStages`, `getStaleOpportunities`); `features/opportunities/hooks.ts` (full query + mutation hooks with cache invalidation; redundant invalidation in `useCloseOpportunity` removed)
+- **Opportunities: API + hooks** — `features/opportunities/api.ts` (`getOpportunities`, `getOpportunityById`, `getOpportunityProducts`, `getPipelineStages`, `getSectors`, `getStaleOpportunities`, `getCloseDealPreview`); `features/opportunities/hooks.ts` (full query + mutation hooks; `useOpportunities` uses `placeholderData: keepPreviousData` so filter transitions don't flash empty state; `useSectors` and `useCloseDealPreview` added)
 - **Opportunities: column definitions** — `features/opportunities/columns.tsx` (`getOpportunityColumns(role, onWonSelected)` factory)
 - **date-fns** — installed as production dependency (used in column definitions for relative timestamps)
+- **sonner** — installed as toast library; `<Toaster position="bottom-right" duration={3000} />` added to root `app/layout.tsx`. Available for future components to use — not retrofitted to existing inline-edit cells.
+- **shadcn components installed (round 2)** — `input`, `textarea`, `label`, `badge`, `dialog`, `select`, `command` (added as prerequisites for Opportunities UI)
+- **Auth: signOut action** — `features/auth/actions.ts` (`signOut` Server Action; uses `scope: 'local'` to clear session cookie without a server-side revocation round-trip, avoiding a 10–15 s delay)
+- **Logout button** — bottom of `components/shared/Sidebar.tsx` (Log Out icon + form action={signOut})
+- **MultiSelectFilter** — `components/shared/MultiSelectFilter.tsx` (generic Popover + Command multi-select, reusable across all list pages)
+- **Opportunities: Close Deal modal** — `features/opportunities/components/CloseDealModal.tsx` (contract fields pre-filled from estimated_value/currency, client dedup preview via `useCloseDealPreview`, contact linking preview, error rendered inline, success toast, no optimistic update per CLAUDE.md rule 8)
+- **Opportunities: List page** — `app/(app)/opportunities/page.tsx` (thin Server Component) + `features/opportunities/components/OpportunityListView.tsx` (Client Component; pipeline table, filters: search/stage/at-risk/sector, default excludes Won+Lost, "Show closed" toggle, Close Deal modal wired to `InlineStageCell.onWonSelected`; Sector filter hidden for RSM role; "New Opportunity" button hidden for sector_manager role; row click → `/opportunities/[id]`)
+  - **Intentional 404 gap:** row click → `/opportunities/[id]` and "New Opportunity" → `/opportunities/new` both 404 until the Detail and New pages are built in a later session. This is expected incremental delivery.
 
 ---
 
@@ -37,13 +45,10 @@ Dependencies flow top to bottom — each item can be started once the one above 
 ### Opportunities UI (continue from data layer above)
 
 - **Product Picker component** — `features/opportunities/components/ProductPicker.tsx` (line-item editor with catalog combobox, free-text fallback, manufacturer contact collapsible section)
-- **Close Deal modal** — `features/opportunities/components/CloseDealModal.tsx` (contract fields, client dedup preview, contact linking preview; needs shadcn Dialog, Form components)
-- **List page** — `app/(app)/opportunities/page.tsx` (pipeline table, filters: search / stage / at-risk / sector, default excludes Won+Lost, "Show closed" toggle)
 - **New opportunity page** — `app/(app)/opportunities/new/page.tsx` (registration form using `opportunityRegisterSchema`)
 - **Detail page** — `app/(app)/opportunities/[id]/page.tsx` (sticky header with inline stage + at-risk, Next Step inline textarea, Prospect Details, Products, Activities feed, Contract section)
 
-**Required shadcn components to add before building opportunity pages:**
-`npx shadcn@latest add input textarea label badge dialog select command` (and any others discovered)
+**Future: grouping and RSM filter on the list page** (not in scope yet — admin-requested post-v1 enhancement): group-by sector or RSM, filter-by-RSM multi-select. Currently, admin sees all rows flat with an RSM column and Region column.
 
 ### Clients
 
