@@ -1,0 +1,135 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { DataTable } from '@/components/shared/DataTable'
+import { MultiSelectFilter } from '@/components/shared/MultiSelectFilter'
+import { ToggleFilterChip } from '@/components/shared/ToggleFilterChip'
+import { buttonVariants } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { getOpportunityColumns } from '@/features/opportunities/columns'
+import { useOpportunities, usePipelineStages, useSectors } from '@/features/opportunities/hooks'
+import { CloseDealModal } from './CloseDealModal'
+import type { UserRole } from '@/lib/auth'
+
+interface OpportunityListViewProps {
+  role: UserRole
+  userSectorIds?: string[]
+}
+
+export function OpportunityListView({ role, userSectorIds }: OpportunityListViewProps) {
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+  const [stageIds, setStageIds] = useState<string[]>([])
+  const [sectorIds, setSectorIds] = useState<string[]>([])
+  const [atRiskOnly, setAtRiskOnly] = useState(false)
+  const [showClosed, setShowClosed] = useState(false)
+  const [closingOpportunityId, setClosingOpportunityId] = useState<string | null>(null)
+
+  const { data: stages = [] } = usePipelineStages()
+  // Sector filter is Admin/Sector Manager only (see below) — skip the query
+  // entirely for RSMs, who never render it.
+  const { data: sectors = [] } = useSectors(role !== 'rsm')
+  const { data: opportunities = [], isLoading } = useOpportunities({
+    includeWonLost: showClosed,
+    stageIds: stageIds.length ? stageIds : undefined,
+    atRiskOnly: atRiskOnly || undefined,
+    sectorIds: sectorIds.length ? sectorIds : undefined,
+  })
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return opportunities
+    return opportunities.filter(
+      (o) => o.prospect_company_name.toLowerCase().includes(q) || o.country.toLowerCase().includes(q),
+    )
+  }, [opportunities, search])
+
+  // For sector managers: sort own-sector rows before others.
+  // Array.sort is stable so updated_at DESC order is preserved within each group.
+  const displayed = useMemo(() => {
+    if (!userSectorIds?.length) return filtered
+    return [...filtered].sort((a, b) => {
+      const aOwn = userSectorIds.includes(a.sector_id) ? 0 : 1
+      const bOwn = userSectorIds.includes(b.sector_id) ? 0 : 1
+      return aOwn - bOwn
+    })
+  }, [filtered, userSectorIds])
+
+  const columns = useMemo(() => getOpportunityColumns(role, (id) => setClosingOpportunityId(id)), [role])
+
+  const closingOpportunity = closingOpportunityId
+    ? (opportunities.find((o) => o.id === closingOpportunityId) ?? null)
+    : null
+
+  // Sector Managers have read-only pipeline access — see PRODUCT.md §6
+  const canCreate = role !== 'sector_manager'
+  const newOpportunityLink = canCreate && (
+    <Link href="/opportunities/new" className={buttonVariants({ variant: 'default' })}>
+      New Opportunity
+    </Link>
+  )
+
+  return (
+    <div className="p-6">
+      <PageHeader
+        title="Opportunities"
+        description="The pipeline of deals currently being pursued."
+        actions={newOpportunityLink}
+      />
+
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <Input
+          placeholder="Search company or country…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-56"
+        />
+        <MultiSelectFilter
+          label="Stage"
+          options={stages.map((s) => ({ id: s.id, label: s.name }))}
+          selected={stageIds}
+          onChange={setStageIds}
+        />
+        {/* Sector filter: Admin and Sector Manager only — RSMs don't get it, per ARCHITECTURE.md */}
+        {role !== 'rsm' && (
+          <MultiSelectFilter
+            label="Sector"
+            options={sectors.map((s) => ({ id: s.id, label: s.name }))}
+            selected={sectorIds}
+            onChange={setSectorIds}
+          />
+        )}
+        <ToggleFilterChip label="At Risk" pressed={atRiskOnly} onPressedChange={setAtRiskOnly} activeVariant="destructive" />
+        <ToggleFilterChip label="Show closed" pressed={showClosed} onPressedChange={setShowClosed} />
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-10 animate-pulse rounded-lg bg-muted/60" />
+          ))}
+        </div>
+      ) : displayed.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border py-16 text-center">
+          <p className="text-sm text-muted-foreground">No opportunities yet.</p>
+          {newOpportunityLink}
+        </div>
+      ) : (
+        <DataTable columns={columns} data={displayed} onRowClick={(row) => router.push(`/opportunities/${row.id}`)} />
+      )}
+
+      {closingOpportunity && (
+        <CloseDealModal
+          opportunity={closingOpportunity}
+          open
+          onOpenChange={(nextOpen) => {
+            if (!nextOpen) setClosingOpportunityId(null)
+          }}
+        />
+      )}
+    </div>
+  )
+}

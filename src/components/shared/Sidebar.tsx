@@ -10,9 +10,11 @@ import {
   Activity,
   Package,
   Settings,
+  LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { UserRole } from '@/lib/auth'
+import { signOut } from '@/features/auth/actions'
 
 const navItems = [
   { href: '/dashboard',     label: 'Dashboard',     icon: LayoutDashboard },
@@ -74,6 +76,18 @@ export function Sidebar({ role }: SidebarProps) {
           </>
         )}
       </nav>
+
+      <div className="border-t border-border px-3 py-3">
+        <form action={signOut}>
+          <button
+            type="submit"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <LogOut className="size-4 shrink-0" />
+            Log out
+          </button>
+        </form>
+      </div>
     </aside>
   )
 }

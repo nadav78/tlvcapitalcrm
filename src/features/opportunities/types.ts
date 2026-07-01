@@ -76,9 +76,20 @@ export interface PipelineStage {
   is_active: boolean
 }
 
+export interface Sector {
+  id: string
+  name: string
+}
+
 export interface CloseDealInput {
   contract_value: number
   currency: Currency
   signed_date: string
   expected_delivery_date: string
+}
+
+export interface CloseDealPreview {
+  existingClient: { id: string; name: string } | null
+  willCreateContact: boolean
+  preWinContacts: { id: string; full_name: string }[]
 }

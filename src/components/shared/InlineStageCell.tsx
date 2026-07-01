@@ -67,7 +67,10 @@ export function InlineStageCell({
   }
 
   return (
-    <div className="relative">
+    // Stop propagation: this cell renders inside table rows that may have
+    // their own onRowClick handler (see DataTable) — without this, opening
+    // the stage popover also navigates away via the row click.
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           disabled={isPending}

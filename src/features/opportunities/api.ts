@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
-import type { Opportunity, OpportunityProduct, PipelineStage } from './types'
+import { escapeIlikePattern } from '@/lib/utils'
+import type { Opportunity, OpportunityProduct, PipelineStage, Sector, CloseDealPreview } from './types'
 
 // Select fragment shared across list and detail queries
 const OPPORTUNITY_SELECT = `
@@ -100,6 +101,75 @@ export async function getPipelineStages(): Promise<PipelineStage[]> {
 
   if (error) throw error
   return (data ?? []) as PipelineStage[]
+}
+
+export async function getSectors(): Promise<Sector[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('sectors')
+    .select('id, name')
+    .eq('is_active', true)
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []) as Sector[]
+}
+
+// Read-only mirror of the dedup checks closeOpportunity performs server-side —
+// lets the Close Deal modal preview what will happen before the RSM confirms.
+// RLS already permits reading clients/contacts in the caller's own region, so
+// this uses the regular browser client, not the service role. This is
+// best-effort UX only; closeOpportunity remains the authoritative source of
+// truth re-validated at submit time.
+export async function getCloseDealPreview(
+  opportunity: Pick<
+    Opportunity,
+    'id' | 'region_id' | 'prospect_company_name' | 'prospect_contact_name' | 'prospect_contact_email'
+  >,
+): Promise<CloseDealPreview> {
+  const supabase = createClient()
+
+  // Client lookup and pre-Win contacts are independent of each other — run
+  // them concurrently instead of sequentially.
+  const [clientResult, preWinResult] = await Promise.all([
+    supabase
+      .from('clients')
+      .select('id, name')
+      .eq('region_id', opportunity.region_id)
+      .ilike('name', escapeIlikePattern(opportunity.prospect_company_name))
+      .limit(1),
+    supabase
+      .from('contacts')
+      .select('id, full_name')
+      .eq('opportunity_id', opportunity.id)
+      .is('client_id', null),
+  ])
+  if (clientResult.error) throw clientResult.error
+  if (preWinResult.error) throw preWinResult.error
+
+  const existingClient = clientResult.data?.[0] ?? null
+
+  let willCreateContact = false
+  if (opportunity.prospect_contact_name) {
+    if (existingClient && opportunity.prospect_contact_email) {
+      const { data: existingContact, error: contactError } = await supabase
+        .from('contacts')
+        .select('id')
+        .eq('client_id', existingClient.id)
+        .ilike('email', escapeIlikePattern(opportunity.prospect_contact_email))
+        .maybeSingle()
+      if (contactError) throw contactError
+      willCreateContact = !existingContact
+    } else {
+      willCreateContact = true
+    }
+  }
+
+  return {
+    existingClient,
+    willCreateContact,
+    preWinContacts: preWinResult.data ?? [],
+  }
 }
 
 export async function getStaleOpportunities(daysSinceActivity = 30): Promise<Opportunity[]> {

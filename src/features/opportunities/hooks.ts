@@ -1,11 +1,13 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData, type QueryClient } from '@tanstack/react-query'
 import {
   getOpportunities,
   getOpportunityById,
   getOpportunityProducts,
   getPipelineStages,
+  getSectors,
+  getCloseDealPreview,
   getStaleOpportunities,
 } from './api'
 import {
@@ -28,7 +30,9 @@ export const opportunityKeys = {
   detail: (id: string) => [...opportunityKeys.all, 'detail', id] as const,
   products: (id: string) => [...opportunityKeys.all, 'products', id] as const,
   stages: ['pipeline_stages'] as const,
+  sectors: ['sectors'] as const,
   stale: ['opportunities', 'stale'] as const,
+  closeDealPreview: (opportunityId: string) => ['opportunities', 'close-deal-preview', opportunityId] as const,
 }
 
 // ── Queries ───────────────────────────────────────────────────────────────────
@@ -42,6 +46,7 @@ export function useOpportunities(options?: {
   return useQuery({
     queryKey: opportunityKeys.list(options ?? {}),
     queryFn: () => getOpportunities(options),
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -69,10 +74,30 @@ export function usePipelineStages() {
   })
 }
 
+export function useSectors(enabled = true) {
+  return useQuery({
+    queryKey: opportunityKeys.sectors,
+    queryFn: getSectors,
+    staleTime: 5 * 60 * 1000, // Sectors rarely change — 5-minute cache
+    enabled,
+  })
+}
+
 export function useStaleOpportunities() {
   return useQuery({
     queryKey: opportunityKeys.stale,
     queryFn: () => getStaleOpportunities(30),
+  })
+}
+
+// Best-effort preview for the Close Deal modal — see getCloseDealPreview.
+// The Close Deal modal only ever mounts with a concrete opportunity (it's a
+// required prop on CloseDealModal), so this takes a required Opportunity
+// rather than modeling a null case no caller uses.
+export function useCloseDealPreview(opportunity: Opportunity) {
+  return useQuery({
+    queryKey: opportunityKeys.closeDealPreview(opportunity.id),
+    queryFn: () => getCloseDealPreview(opportunity),
   })
 }
 

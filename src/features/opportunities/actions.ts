@@ -2,6 +2,7 @@
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getUserProfile } from '@/lib/auth'
+import { escapeIlikePattern } from '@/lib/utils'
 import {
   opportunityRegisterSchema,
   opportunitySchema,
@@ -228,7 +229,7 @@ export async function closeOpportunity(
     .from('clients')
     .select('id')
     .eq('region_id', opp.region_id)
-    .ilike('name', opp.prospect_company_name)
+    .ilike('name', escapeIlikePattern(opp.prospect_company_name))
     .limit(1)
 
   let clientId: string
@@ -283,7 +284,7 @@ export async function closeOpportunity(
           .from('contacts')
           .select('id')
           .eq('client_id', clientId)
-          .ilike('email', opp.prospect_contact_email)
+          .ilike('email', escapeIlikePattern(opp.prospect_contact_email))
           .single()
       : { data: null }
 

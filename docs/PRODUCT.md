@@ -44,6 +44,8 @@ A Sector Manager is responsible for one or more business sectors within the port
 
 Sectors are managed by Admins and new ones can be added at any time without disrupting the system. A Sector Manager has read-only access to the full product catalog, the full pipeline, and all contracts. They can create and edit contacts and activities. The Admin assigns managers to sectors and can change assignments at any time. The Admin can also configure individual Sector Managers to see only records in their assigned sectors if the business requires it in the future.
 
+In the Opportunities list, a Sector Manager's assigned sectors are sorted to the top of the pipeline table. Opportunities in their sectors appear first, followed by opportunities in other sectors — both groups sorted by most recently updated. The Sector filter still works as normal on top of this ordering.
+
 ---
 
 ## 3. Glossary
