@@ -7,7 +7,6 @@ import {
   getOpportunityProducts,
   getPipelineStages,
   getSectors,
-  getRegions,
   getAdvisors,
   getRsmUsers,
   getCloseDealPreview,
@@ -34,7 +33,6 @@ export const opportunityKeys = {
   products: (id: string) => [...opportunityKeys.all, 'products', id] as const,
   stages: ['pipeline_stages'] as const,
   sectors: ['sectors'] as const,
-  regions: ['regions'] as const,
   advisors: ['advisors'] as const,
   rsmUsers: ['users', 'rsm'] as const,
   stale: ['opportunities', 'stale'] as const,
@@ -86,14 +84,6 @@ export function useSectors(enabled = true) {
     queryFn: getSectors,
     staleTime: 5 * 60 * 1000, // Sectors rarely change — 5-minute cache
     enabled,
-  })
-}
-
-export function useRegions() {
-  return useQuery({
-    queryKey: opportunityKeys.regions,
-    queryFn: getRegions,
-    staleTime: 5 * 60 * 1000, // Regions rarely change — 5-minute cache
   })
 }
 

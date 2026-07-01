@@ -28,14 +28,14 @@ INSERT INTO advisors (name) VALUES
   ('Ziv')
 ON CONFLICT (name) DO NOTHING;
 
--- Pipeline stages (ordered, with terminal flags)
-INSERT INTO pipeline_stages (name, display_order, is_won, is_lost) VALUES
-  ('New',              1, false, false),
-  ('Qualified',        2, false, false),
-  ('Awaiting NDA',     3, false, false),
-  ('Proposal Sent',    4, false, false),
-  ('Negotiation',      5, false, false),
-  ('Awaiting License', 6, false, false),
-  ('Won',              7, true,  false),
-  ('Lost',             8, false, true)
+-- Pipeline stages (ordered, with terminal + default flags)
+INSERT INTO pipeline_stages (name, display_order, is_won, is_lost, is_default) VALUES
+  ('New',              1, false, false, true),
+  ('Qualified',        2, false, false, false),
+  ('Awaiting NDA',     3, false, false, false),
+  ('Proposal Sent',    4, false, false, false),
+  ('Negotiation',      5, false, false, false),
+  ('Awaiting License', 6, false, false, false),
+  ('Won',              7, true,  false, false),
+  ('Lost',             8, false, true,  false)
 ON CONFLICT (name) DO NOTHING;

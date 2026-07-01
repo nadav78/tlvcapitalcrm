@@ -5,7 +5,6 @@ import type {
   OpportunityProduct,
   PipelineStage,
   Sector,
-  Region,
   Advisor,
   RsmUser,
   CloseDealPreview,
@@ -104,7 +103,7 @@ export async function getPipelineStages(): Promise<PipelineStage[]> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('pipeline_stages')
-    .select('id, name, display_order, is_won, is_lost, is_active')
+    .select('id, name, display_order, is_won, is_lost, is_default, is_active')
     .eq('is_active', true)
     .order('display_order', { ascending: true })
 
@@ -122,18 +121,6 @@ export async function getSectors(): Promise<Sector[]> {
 
   if (error) throw error
   return (data ?? []) as Sector[]
-}
-
-export async function getRegions(): Promise<Region[]> {
-  const supabase = createClient()
-  const { data, error } = await supabase
-    .from('regions')
-    .select('id, name')
-    .eq('is_active', true)
-    .order('name', { ascending: true })
-
-  if (error) throw error
-  return (data ?? []) as Region[]
 }
 
 export async function getAdvisors(): Promise<Advisor[]> {

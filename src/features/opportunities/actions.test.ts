@@ -204,6 +204,34 @@ describe('createOpportunity', () => {
     expect(result.success).toBe(true)
     expect(result.id).toBeDefined()
   })
+
+  it('Admin submitting a region_id that does not match the chosen RSM → error', async () => {
+    activeClient = adminClient
+    const { createOpportunity } = await import('./actions')
+
+    const result = await createOpportunity({
+      ...baseOpportunity(),
+      rsm_id: rsmAUserId,
+      region_id: regionBId, // RSM A is in region A, not B
+    })
+
+    expect(result.error).toBeDefined()
+    expect(result.success).toBeUndefined()
+  })
+
+  it('Admin submitting an rsm_id that is not an RSM → error', async () => {
+    activeClient = adminClient
+    const { createOpportunity } = await import('./actions')
+
+    const result = await createOpportunity({
+      ...baseOpportunity(),
+      rsm_id: adminUserId, // not an rsm-role user
+      region_id: regionAId,
+    })
+
+    expect(result.error).toBeDefined()
+    expect(result.success).toBeUndefined()
+  })
 })
 
 // ── updateOpportunity ────────────────────────────────────────────────────────

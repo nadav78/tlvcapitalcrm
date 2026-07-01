@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, useWatch, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -68,18 +68,22 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
     },
   })
 
-  // Defaults to the "New" stage — this is not a field the RSM chooses at
-  // registration (PRODUCT.md §4.1: "Stage (defaults to New)"). Set once the
-  // stage list loads, since it isn't available on the form's first render.
-  const newStageId = stages.find((s) => s.name === 'New')?.id
+  // Defaults to the default stage (pipeline_stages.is_default) — this is not a
+  // field the RSM chooses at registration (PRODUCT.md §4.1: "Stage (defaults to
+  // New)"). Matched via the boolean flag, not the stage name, since Admins can
+  // rename stages (PRODUCT.md §4.6) — same reasoning as is_won/is_lost. Set
+  // once the stage list loads, since it isn't available on the form's first render.
+  const defaultStageId = stages.find((s) => s.is_default)?.id
   useEffect(() => {
-    if (newStageId) setValue('stage_id', newStageId)
-  }, [newStageId, setValue])
+    if (defaultStageId) setValue('stage_id', defaultStageId)
+  }, [defaultStageId, setValue])
+
+  const rsmId = useWatch({ control, name: 'rsm_id' })
 
   function handleRsmChange(rsmId: string | null) {
-    setValue('rsm_id', rsmId ?? '')
+    setValue('rsm_id', rsmId ?? '', { shouldValidate: true })
     const selectedRsm = rsmUsers.find((r) => r.id === rsmId)
-    setValue('region_id', selectedRsm?.region_id ?? '')
+    setValue('region_id', selectedRsm?.region_id ?? '', { shouldValidate: true })
   }
 
   function onSubmit(values: OpportunityRegisterValues) {
@@ -97,8 +101,8 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
     })
   }
 
-  const stagesReady = !!newStageId
-  const rsmsReady = profile.role !== 'admin' || rsmUsers.length > 0
+  const stagesReady = !!defaultStageId
+  const rsmsReady = profile.role !== 'admin' || !!rsmId
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl space-y-6">
@@ -111,18 +115,24 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
       {profile.role === 'admin' && (
         <div className="space-y-1.5">
           <Label htmlFor="rsm_id">RSM (Account Manager)</Label>
-          <Select onValueChange={handleRsmChange} disabled={isPending}>
-            <SelectTrigger id="rsm_id" className="w-full">
-              <SelectValue placeholder="Select RSM" />
-            </SelectTrigger>
-            <SelectContent>
-              {rsmUsers.map((rsm) => (
-                <SelectItem key={rsm.id} value={rsm.id}>
-                  {rsm.full_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Controller
+            name="rsm_id"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value || null} onValueChange={handleRsmChange} disabled={isPending}>
+                <SelectTrigger id="rsm_id" className="w-full">
+                  <SelectValue placeholder="Select RSM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {rsmUsers.map((rsm) => (
+                    <SelectItem key={rsm.id} value={rsm.id}>
+                      {rsm.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.rsm_id && <p className="text-xs text-destructive">{errors.rsm_id.message}</p>}
         </div>
       )}

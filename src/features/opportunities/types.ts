@@ -73,15 +73,11 @@ export interface PipelineStage {
   display_order: number
   is_won: boolean
   is_lost: boolean
+  is_default: boolean
   is_active: boolean
 }
 
 export interface Sector {
-  id: string
-  name: string
-}
-
-export interface Region {
   id: string
   name: string
 }

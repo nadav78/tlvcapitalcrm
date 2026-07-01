@@ -28,6 +28,23 @@ export async function createOpportunity(input: OpportunityRegisterValues) {
   }
 
   const supabase = await createClient()
+
+  // Admin can assign any RSM, but the submitted rsm_id/region_id pair is
+  // client-derived — re-verify server-side that the target is an active RSM
+  // and that region_id actually matches their assigned region, the same
+  // check reassignOpportunity performs before writing a cross-region change.
+  if (profile.role === 'admin') {
+    const { data: targetRsm, error: rsmError } = await supabase
+      .from('users')
+      .select('id, role, region_id, is_active')
+      .eq('id', parsed.data.rsm_id)
+      .single()
+
+    if (rsmError || !targetRsm) return { error: 'RSM not found' }
+    if (targetRsm.role !== 'rsm' || !targetRsm.is_active) return { error: 'Target user is not an active RSM' }
+    if (targetRsm.region_id !== parsed.data.region_id) return { error: 'region_id does not match the selected RSM' }
+  }
+
   const { data, error } = await supabase
     .from('opportunities')
     .insert({
