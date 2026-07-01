@@ -50,9 +50,11 @@ Every modal, confirmation dialog, and alert dialog uses shadcn's `AlertDialog` (
 
 Any redirect target that comes from user input (a query param, a form field, a stored "return to" path) must be validated with `safeRedirectPath` from `lib/redirect.ts` — never a regex prefix check. A regex that blocklists specific bypass sequences (e.g. a leading `//` or `/\`) is not sufficient: control characters like tab/CR/LF are stripped by URL parsers wherever they occur in the string (per the WHATWG URL spec), so a payload can still collapse into a protocol-relative URL after being accepted by the regex. `safeRedirectPath` resolves the value against a placeholder origin and rejects anything that doesn't resolve back to that same origin, which is robust to this class of bypass.
 
-### 8. Never add optimistic updates to a mutation.
+### 8. Never add optimistic updates to a multi-record mutation.
 
-Every `useMutation` waits for the server to confirm success before the UI reflects the change — no `onMutate` cache-patching, no assuming a write succeeded. The data in this CRM (deal values, stage changes, activities) is consequential enough that a failed optimistic update rolling back is worse than a brief, honest loading state. See ARCHITECTURE.md's "Feedback Pattern" section.
+Closing a deal, reassigning an opportunity, and deleting a client/contact each write more than one record or trigger complex side effects (Client + Contract creation, contact linking, region reassignment). These always wait for server confirmation before the UI reflects the change — no `onMutate` cache-patching — because a failed optimistic update here is expensive or unclear to unwind cleanly.
+
+This does **not** extend to single-field mutations (a stage change, the `next_step` textarea, an `is_at_risk` toggle). Those are exactly the fields the Inline Editing pattern requires to feel instant, and a one-field rollback is cheap — an optimistic update there is a reasonable, deliberate UX choice, not something to avoid by default. See ARCHITECTURE.md's "Feedback Pattern" and "Inline Editing for High-Frequency Fields" sections.
 
 ### 9. `pipeline_stages.is_won` and `is_lost` are read-only display fields in any admin UI — never editable checkboxes.
 

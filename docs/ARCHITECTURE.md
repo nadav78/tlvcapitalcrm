@@ -634,7 +634,9 @@ Never use a full page for an edit form. Never use a modal for a form with more t
 - Button: disabled + spinner while the mutation is in flight. The button label does not change — the spinner is sufficient.
 - Initial page load: skeleton loaders (grey shapes matching the approximate layout) rather than a centred spinner. A skeleton tells the user what structure is coming; a spinner tells them nothing.
 
-**No optimistic updates.** The data in this CRM — deal values, stage changes, activities — is consequential. The UI confirms success from the server before updating. The loading state is fast enough (local Supabase → Vercel round-trip) that the cost of waiting is lower than the cost of a failed optimistic update that needs to roll back.
+**No optimistic updates for multi-record mutations.** Closing a deal, reassigning an opportunity, and deleting a client/contact each write more than one record or trigger complex side effects (Client + Contract creation, contact linking, region reassignment). The UI confirms success from the server before updating for these — the loading state is fast enough (local Supabase → Vercel round-trip) that the cost of waiting is lower than the cost of a failed optimistic update that needs to unwind cleanly.
+
+This is not a blanket rule against optimistic updates everywhere. Single-field mutations — a stage change, the `next_step` textarea, an `is_at_risk` toggle — are cheap to roll back (revert one field) and are exactly the fields the "Inline Editing for High-Frequency Fields" pattern below requires to feel instant. An optimistic update is a reasonable, deliberate choice for those; it just isn't the default and isn't used for anything that touches more than one record.
 
 ---
 
