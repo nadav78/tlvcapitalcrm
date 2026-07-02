@@ -12,7 +12,7 @@ Nothing currently in progress.
 - **RLS policies** — row-level security for all tables, all roles (`supabase/migrations/0009_rls.sql`, `0010_grants.sql`, `0011_contract_update_guard.sql`, `0012_bug_fixes.sql`, `0013_auth_role_active_check.sql` — `auth_role()` now excludes deactivated (`is_active = false`) users, closing a gap where a deactivated user's JWT still passed every RLS policy — `0014_guard_rsm_contract_columns_auth_role.sql` — the contract column-guard trigger now checks `auth_role()` instead of a raw role subquery, so it stays consistent with the `is_active` gate)
 - **Seed data** — lookup tables populated (sectors, pipeline stages, advisors, regions) (`supabase/seed.sql`)
 - **RLS integration tests** — full test suite verifying policies per role (`supabase/tests/rls.test.ts`)
-- **Project tooling** — Next.js 15, Supabase client, shadcn/ui, TanStack Query/Table, React Hook Form, Zod, Vitest configured
+- **Project tooling** — Next.js 16, Supabase client, shadcn/ui, TanStack Query/Table, React Hook Form, Zod, Vitest configured
 - **Foundation: Supabase clients** — `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server + service role; supports `SUPABASE_TEST_TOKEN` for action tests)
 - **Foundation: Auth helpers** — `lib/auth.ts` (`getUserProfile`, `requireAuth`, `UserProfile` type)
 - **Foundation: Constants** — `lib/constants.ts` (CURRENCIES, all enum display-name maps)

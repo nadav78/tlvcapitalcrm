@@ -7,7 +7,7 @@ This file is read by Claude Code at the start of every session. It defines how t
 
 ## What This Project Is
 
-An internal CRM for TLV Capital, a defense export company. Three user roles: Admin (full access across all regions and sectors), RSM (own region only), Sector Manager (own sector's product catalog + read-only pipeline). Built with Next.js 15 App Router, Supabase (PostgreSQL + RLS), shadcn/ui, TanStack Table, and TanStack Query.
+An internal CRM for TLV Capital, a defense export company. Three user roles: Admin (full access across all regions and sectors), RSM (own region only), Sector Manager (own sector's product catalog + read-only pipeline). Built with Next.js 16 App Router, Supabase (PostgreSQL + RLS), shadcn/ui, TanStack Table, and TanStack Query.
 
 - Business requirements → `docs/PRODUCT.md`
 - Database schema → `docs/SCHEMA.md` — **not auto-loaded.** Read it before writing any migration, RLS policy, Server Action, or `api.ts` query, and before adding form fields that map to columns. It is the human-readable contract (column semantics, constraints, RLS per table, design rationale); `src/lib/supabase/database.types.ts` only catches name/type errors, not meaning.
