@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { Pencil } from 'lucide-react'
 import { useUpdateOpportunityField } from '@/features/opportunities/hooks'
 
 interface InlineTextareaCellProps {
@@ -64,10 +65,17 @@ export function InlineTextareaCell({ opportunityId, field, value }: InlineTextar
         e.stopPropagation()
         startEdit()
       }}
-      className="w-full text-left text-sm truncate max-w-[280px] text-muted-foreground hover:text-foreground transition-colors"
+      className="group flex w-full max-w-[280px] items-center gap-1.5 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
       title={value ?? undefined}
     >
-      {value || <span className="italic opacity-50">Add next step…</span>}
+      <span className="min-w-0 truncate">
+        {value || <span className="italic opacity-50">Add next step…</span>}
+      </span>
+      {/* Filled state otherwise has no idiom saying "click to edit" — the
+          empty state's placeholder text already implies it. */}
+      {value && (
+        <Pencil className="size-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-60 group-focus-visible:opacity-60" />
+      )}
     </button>
   )
 }

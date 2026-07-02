@@ -10,8 +10,10 @@ import { InlineTextareaCell } from '@/components/shared/InlineTextareaCell'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
-// Format currency with locale
-function formatValue(value: number | null, currency: string | null): string {
+// Format currency with locale — exported for reuse in the mobile card list
+// (features/opportunities/components/OpportunityCard.tsx), which needs the
+// same formatting as the desktop Value column.
+export function formatValue(value: number | null, currency: string | null): string {
   if (value == null || !currency) return '—'
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -20,23 +22,33 @@ function formatValue(value: number | null, currency: string | null): string {
   }).format(value)
 }
 
-// Relative time with stale indicator.
+// Pure formatting logic, split out so it's testable without mounting a
+// component. `formatDistanceToNow`'s "about 1 month ago" wraps to two lines
+// in the Last Activity column — the "about " prefix reads as noise here, so
+// it's stripped.
+function formatLastActivity(value: string | null, now: number): { label: string; isStale: boolean } {
+  const date = new Date(value ?? '')
+  const daysAgo = (now - date.getTime()) / (1000 * 60 * 60 * 24)
+  const label = formatDistanceToNow(date, { addSuffix: true }).replace(/^about /, '')
+  return { label, isStale: daysAgo > 30 }
+}
+
+// Relative time with stale indicator. Exported for reuse in the mobile card
+// list — same last-activity presentation as the desktop table.
 // `now` is captured once via a lazy useState initializer rather than calling
 // Date.now() directly in the render body — the React Compiler's purity rule
 // (react-hooks/purity) flags impure functions called during render, since a
 // memoized render could otherwise return a different result for the same
 // props. This cell only re-renders when the table refetches anyway, so this
 // doesn't change the effective freshness of the "N days ago" label.
-function LastActivityCell({ value }: { value: string | null }) {
+export function LastActivityCell({ value }: { value: string | null }) {
   const [now] = useState(() => Date.now())
   if (!value) return <span className="text-muted-foreground italic text-xs">No activity</span>
 
-  const date = new Date(value)
-  const daysAgo = (now - date.getTime()) / (1000 * 60 * 60 * 24)
-  const label = formatDistanceToNow(date, { addSuffix: true })
+  const { label, isStale } = formatLastActivity(value, now)
 
   return (
-    <span className={cn('text-xs', daysAgo > 30 ? 'text-destructive font-medium' : 'text-muted-foreground')}>
+    <span className={cn('text-xs', isStale ? 'text-destructive font-medium' : 'text-muted-foreground')}>
       {label}
     </span>
   )
@@ -51,17 +63,22 @@ function getBaseColumns(
       accessorKey: 'prospect_company_name',
       header: 'Company',
       cell: ({ row }) => (
-        <span className="font-medium text-sm">
-          {row.original.prospect_company_name}
+        // Truncated to keep row heights even (long names otherwise wrap to
+        // 2–3 lines) — the name and at-risk badge are separate flex children
+        // so truncation never clips the badge.
+        <div className="flex max-w-[240px] items-center gap-2">
+          <span className="truncate font-medium text-sm" title={row.original.prospect_company_name}>
+            {row.original.prospect_company_name}
+          </span>
           {/* The at-risk flag must be visible while scanning the list, not
               only via the At Risk filter (PRODUCT.md §7 surfaces it on both
               dashboards — the pipeline table is where RSMs actually look) */}
           {row.original.is_at_risk && (
-            <Badge variant="destructive" className="ml-2 align-middle">
+            <Badge variant="destructive" className="shrink-0">
               At risk
             </Badge>
           )}
-        </span>
+        </div>
       ),
     },
     {
