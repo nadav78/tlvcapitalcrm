@@ -64,6 +64,10 @@ Changing which stage carries `is_won = true` silently changes which stage trigge
 
 Creating an Opportunity is a full page. Editing an Opportunity, Client, or Contact is a slide-over. A focused action (Log Activity, Close Deal, a destructive confirmation) is a modal. A high-frequency field (stage, next step, at-risk) is inline. Picking the wrong one of these for a new form is easy to do without noticing — see ARCHITECTURE.md's "Form Presentation" table before adding any new form.
 
+### 11. Before building or modifying any UI, read `docs/UI-STANDARDS.md`.
+
+It is short and deliberately not auto-loaded. Every rule in it traces to a defect a craft review actually found (the app shipped rendering in Times New Roman because a token self-referenced; forms shipped edge-flush at 375px; Zod's default messages leaked `expected one of "cold_outreach"|…` to users). New UI that skips it re-introduces paid-for problems. Deferred UI improvements are planned in `docs/UI-PLAN.md` — check it before starting standalone UI polish work.
+
 ## Folder Structure
 
 ```
