@@ -2,7 +2,7 @@
 
 Read this before building or modifying any UI. It is deliberately short — every rule here traces to a concrete defect found in the 2026-07 craft review (`docs/fable-ui-review/08-craft-review.md`) and fixed in PR #10. The bar is: **the app must read as a considered internal tool, not a generic scaffold.** These rules keep new surfaces from re-introducing the roughness that was already paid for once.
 
-Feedback patterns (spinners, toasts, inline errors, skeletons, optimistic-update rules) are defined in ARCHITECTURE.md's "Feedback Pattern" section and CLAUDE.md rule 8 — this file doesn't repeat them.
+Feedback patterns (spinners, toasts, inline errors, skeletons, optimistic-update rules) are defined in `docs/reference/PAGE-SPECS.md`'s "Feedback Pattern" section and CLAUDE.md rule 8 — this file doesn't repeat them.
 
 ## Tokens and type
 
@@ -30,8 +30,8 @@ Feedback patterns (spinners, toasts, inline errors, skeletons, optimistic-update
 
 ## Base UI specifics
 
-13. **Controlled `Select` values are never `undefined`** — default nullable fields to `null` and coerce at the JSX call site (`value={field.value ?? null}`). This is documented in ARCHITECTURE.md's Base UI gotchas and was still missed once (CloseDealModal); check every new `Controller`-wrapped Select against it.
+13. **Controlled `Select` values are never `undefined`** — default nullable fields to `null` and coerce at the JSX call site (`value={field.value ?? null}`). This is documented in `docs/reference/TESTING.md`'s Base UI Select gotchas and was still missed once (CloseDealModal); check every new `Controller`-wrapped Select against it.
 
 ## Verifying UI work
 
-14. For anything beyond a trivial change, do a quick capture pass with `scripts/playwright-helpers.mjs` (see ARCHITECTURE.md "Scripted Browser Verification"): desktop + 375px screenshots, `attachDiagnostics` for console warnings, and — if realistic data volume matters — seed with `scripts/seed-demo-opportunities.mjs` (idempotent, 41 rows). Judge the screenshot like a stranger would: what's clickable, what's cramped, what wraps.
+14. For anything beyond a trivial change, do a quick capture pass with `scripts/playwright-helpers.mjs` (see `docs/reference/TESTING.md` "Scripted Browser Verification"): desktop + 375px screenshots, `attachDiagnostics` for console warnings, and — if realistic data volume matters — seed with `scripts/seed-demo-opportunities.mjs` (idempotent, 41 rows). Judge the screenshot like a stranger would: what's clickable, what's cramped, what wraps.

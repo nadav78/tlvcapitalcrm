@@ -12,7 +12,7 @@ An internal CRM for TLV Capital, a defense export company. Three user roles: Adm
 
 - Business requirements → `docs/PRODUCT.md`
 - Database schema → `docs/SCHEMA.md`
-- Stack decisions and patterns → `docs/ARCHITECTURE.md`
+- Stack decisions and patterns → `docs/ARCHITECTURE.md` (core, auto-loaded). Detailed feature patterns, per-page UX specs, and the testing/browser-verification setup live in `docs/reference/` — read the relevant file before implementing a feature, page, or test (each ARCHITECTURE.md section stub says which).
 
 ## Non-Negotiable Rules
 
@@ -54,7 +54,7 @@ Any redirect target that comes from user input (a query param, a form field, a s
 
 Closing a deal, reassigning an opportunity, and deleting a client/contact each write more than one record or trigger complex side effects (Client + Contract creation, contact linking, region reassignment). These always wait for server confirmation before the UI reflects the change — no `onMutate` cache-patching — because a failed optimistic update here is expensive or unclear to unwind cleanly.
 
-This does **not** extend to single-field mutations (a stage change, the `next_step` textarea, an `is_at_risk` toggle). Those are exactly the fields the Inline Editing pattern requires to feel instant, and a one-field rollback is cheap — an optimistic update there is a reasonable, deliberate UX choice, not something to avoid by default. See ARCHITECTURE.md's "Feedback Pattern" and "Inline Editing for High-Frequency Fields" sections.
+This does **not** extend to single-field mutations (a stage change, the `next_step` textarea, an `is_at_risk` toggle). Those are exactly the fields the Inline Editing pattern requires to feel instant, and a one-field rollback is cheap — an optimistic update there is a reasonable, deliberate UX choice, not something to avoid by default. See `docs/reference/PAGE-SPECS.md`'s "Feedback Pattern" and `docs/reference/FEATURE-PATTERNS.md`'s "Inline Editing for High-Frequency Fields" sections.
 
 ### 9. `pipeline_stages.is_won` and `is_lost` are read-only display fields in any admin UI — never editable checkboxes.
 
@@ -62,7 +62,7 @@ Changing which stage carries `is_won = true` silently changes which stage trigge
 
 ### 10. Follow the Form Presentation table exactly — never a full page for an edit, never a modal with more than ~6 fields.
 
-Creating an Opportunity is a full page. Editing an Opportunity, Client, or Contact is a slide-over. A focused action (Log Activity, Close Deal, a destructive confirmation) is a modal. A high-frequency field (stage, next step, at-risk) is inline. Picking the wrong one of these for a new form is easy to do without noticing — see ARCHITECTURE.md's "Form Presentation" table before adding any new form.
+Creating an Opportunity is a full page. Editing an Opportunity, Client, or Contact is a slide-over. A focused action (Log Activity, Close Deal, a destructive confirmation) is a modal. A high-frequency field (stage, next step, at-risk) is inline. Picking the wrong one of these for a new form is easy to do without noticing — see `docs/reference/PAGE-SPECS.md`'s "Form Presentation" table before adding any new form.
 
 ### 11. Before building or modifying any UI, read `docs/UI-STANDARDS.md`.
 
@@ -307,7 +307,7 @@ Branch naming:
 At the end of any implementation session:
 1. Update `docs/STATUS.md` (see Session Workflow above)
 2. Make sure `npx tsc --noEmit`, `npm test`, and `npm run build` are clean
-3. For UI changes: if the feature has multiple role-gated branches (different behavior for Admin/RSM/Sector Manager, a redirect guard) or a failure mode that wouldn't show up just by looking at the screen (a React console warning, a swallowed network error), suggest running a scripted Playwright verification pass before opening the PR — don't just assume the user's own manual click-through covered every branch. See `docs/ARCHITECTURE.md`'s "Scripted Browser Verification" section for setup and when this is (and isn't) worth the cost. This is a suggestion to raise, not something to run unprompted on every UI change — most UI changes are fine verified by hand.
+3. For UI changes: if the feature has multiple role-gated branches (different behavior for Admin/RSM/Sector Manager, a redirect guard) or a failure mode that wouldn't show up just by looking at the screen (a React console warning, a swallowed network error), suggest running a scripted Playwright verification pass before opening the PR — don't just assume the user's own manual click-through covered every branch. See `docs/reference/TESTING.md`'s "Scripted Browser Verification" section for setup and when this is (and isn't) worth the cost. This is a suggestion to raise, not something to run unprompted on every UI change — most UI changes are fine verified by hand.
 4. Create a PR with `gh pr create`
 5. Decide whether the change needs review before merging:
    - **Low-risk** — docs-only changes, dependency-following refactors (e.g. swapping hand-rolled markup for an existing shadcn/library component with no logic change), mechanical extractions, config/rule updates: skip review and merge directly with `gh pr merge --squash` once step 2 is clean.
