@@ -29,7 +29,7 @@ const MNDA_STATUSES = ['not_required', 'pending', 'sent', 'signed'] as const
 // `expected one of "cold_outreach"|"partner"|…` into the UI.
 export const opportunityRegisterSchema = z.object({
   rsm_id: z.string('Select an RSM').uuid('Select an RSM'),
-  region_id: z.string('Select an RSM').uuid('Select an RSM'),
+  region_id: z.string('Select a region').uuid('Select a region'),
   country: z.string('Enter the country').min(1, 'Enter the country'),
   stage_id: z.string().uuid(),
   requirement_type: z.string('Enter the requirement type').min(1, 'Enter the requirement type'),
@@ -44,10 +44,10 @@ export const opportunityRegisterSchema = z.object({
   prospect_organization_type: z.enum(ORG_TYPES).nullable().optional(),
   prospect_contact_name: z.string().optional(),
   prospect_website: z
-    .union([z.string().url(), z.literal('')], 'Enter a valid website address (https://…)')
+    .union([z.string().url('Enter a valid website address (https://…)'), z.literal('')])
     .optional(),
   prospect_contact_email: z
-    .union([z.string().email(), z.literal('')], 'Enter a valid email address')
+    .union([z.string().email('Enter a valid email address'), z.literal('')])
     .optional(),
   prospect_contact_phone: z.string().optional(),
   advisor_id: z.string().uuid().nullable().optional(),
