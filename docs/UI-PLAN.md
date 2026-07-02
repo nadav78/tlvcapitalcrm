@@ -60,3 +60,4 @@ Popovers, dialogs, selects appear/disappear in a single frame — "abrupt" rathe
 | Date | Session | Done | In progress / notes |
 |---|---|---|---|
 | 2026-07-02 | Craft review (Fable) | Review written (`08-craft-review.md`); 9 quick wins fixed in PR #10; this plan created | PR #10 open awaiting fresh-session review. Items 1–8 above not started. |
+| 2026-07-02 | Independent review of PR #10 | Fresh-session review found and fixed 2 schema message bugs (`region_id` copy-paste, `z.union()` second-arg message not applying in Zod v4) plus 3 stale `docs/STATUS.md` pointers left by the ARCHITECTURE.md split; PR #10 merged (`a81a836`), branch deleted | Items 1–8 above still not started — next session should pick up from the Ranked plan items list. |
