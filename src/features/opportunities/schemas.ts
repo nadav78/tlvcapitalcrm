@@ -23,25 +23,31 @@ const MNDA_STATUSES = ['not_required', 'pending', 'sent', 'signed'] as const
 // Fields required when a new opportunity enters the pipeline (§4.1 of PRODUCT.md).
 // All non-optional fields have NOT NULL constraints in the database.
 
+// Error messages here are shown directly to RSMs under form fields (React
+// Hook Form renders `errors.<field>.message`) — they must read as plain
+// instructions, never as Zod's defaults, which leak schema internals like
+// `expected one of "cold_outreach"|"partner"|…` into the UI.
 export const opportunityRegisterSchema = z.object({
-  rsm_id: z.string().uuid(),
-  region_id: z.string().uuid(),
-  country: z.string().min(1),
+  rsm_id: z.string('Select an RSM').uuid('Select an RSM'),
+  region_id: z.string('Select an RSM').uuid('Select an RSM'),
+  country: z.string('Enter the country').min(1, 'Enter the country'),
   stage_id: z.string().uuid(),
-  requirement_type: z.string().min(1),
-  sector_id: z.string().uuid(),
-  description: z.string().min(1),
-  prospect_company_name: z.string().min(1),
-  lead_source: z.enum(LEAD_SOURCES),
-  registration_date: z.string().date(),
+  requirement_type: z.string('Enter the requirement type').min(1, 'Enter the requirement type'),
+  sector_id: z.string('Select a sector').uuid('Select a sector'),
+  description: z.string('Enter a brief description').min(1, 'Enter a brief description'),
+  prospect_company_name: z
+    .string('Enter the prospect company name')
+    .min(1, 'Enter the prospect company name'),
+  lead_source: z.enum(LEAD_SOURCES, 'Select a lead source'),
+  registration_date: z.string('Enter the registration date').date('Enter a valid date'),
   // Optional at registration — filled when available
   prospect_organization_type: z.enum(ORG_TYPES).nullable().optional(),
   prospect_contact_name: z.string().optional(),
   prospect_website: z
-    .union([z.string().url(), z.literal('')])
+    .union([z.string().url(), z.literal('')], 'Enter a valid website address (https://…)')
     .optional(),
   prospect_contact_email: z
-    .union([z.string().email(), z.literal('')])
+    .union([z.string().email(), z.literal('')], 'Enter a valid email address')
     .optional(),
   prospect_contact_phone: z.string().optional(),
   advisor_id: z.string().uuid().nullable().optional(),
@@ -101,11 +107,15 @@ export type OpportunityProductValues = z.infer<typeof opportunityProductSchema>
 // ── closeDealSchema ──────────────────────────────────────────────────────────
 // Fields collected in the Close Deal modal before marking an opportunity Won.
 
+// Same rule as opportunityRegisterSchema: these messages render inline in the
+// Close Deal modal — keep them human.
 export const closeDealSchema = z.object({
-  contract_value: z.number().positive(),
-  currency: z.enum(CURRENCIES),
-  signed_date: z.string().date(),
-  expected_delivery_date: z.string().date(),
+  contract_value: z.number('Enter the contract value').positive('Enter the contract value'),
+  currency: z.enum(CURRENCIES, 'Select a currency'),
+  signed_date: z.string('Enter the signed date').date('Enter the signed date'),
+  expected_delivery_date: z
+    .string('Enter the expected delivery date')
+    .date('Enter the expected delivery date'),
 })
 
 export type CloseDealValues = z.infer<typeof closeDealSchema>

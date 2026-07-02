@@ -5,8 +5,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { formatDistanceToNow } from 'date-fns'
 import type { Opportunity } from './types'
 import type { UserRole } from '@/lib/auth'
-import { InlineStageCell } from '@/components/shared/InlineStageCell'
+import { InlineStageCell, stageBadgeClasses } from '@/components/shared/InlineStageCell'
 import { InlineTextareaCell } from '@/components/shared/InlineTextareaCell'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 // Format currency with locale
@@ -50,7 +51,17 @@ function getBaseColumns(
       accessorKey: 'prospect_company_name',
       header: 'Company',
       cell: ({ row }) => (
-        <span className="font-medium text-sm">{row.original.prospect_company_name}</span>
+        <span className="font-medium text-sm">
+          {row.original.prospect_company_name}
+          {/* The at-risk flag must be visible while scanning the list, not
+              only via the At Risk filter (PRODUCT.md §7 surfaces it on both
+              dashboards — the pipeline table is where RSMs actually look) */}
+          {row.original.is_at_risk && (
+            <Badge variant="destructive" className="ml-2 align-middle">
+              At risk
+            </Badge>
+          )}
+        </span>
       ),
     },
     {
@@ -80,11 +91,13 @@ function getBaseColumns(
     },
     {
       id: 'estimated_value',
-      header: 'Value',
+      // Right-aligned (header and cells) so amounts can be compared down the
+      // column — tabular-nums only pays off once the digits line up
+      header: () => <div className="text-right">Value</div>,
       cell: ({ row }) => (
-        <span className="text-sm tabular-nums">
+        <div className="text-right text-sm tabular-nums">
           {formatValue(row.original.estimated_value, row.original.currency)}
-        </span>
+        </div>
       ),
     },
     {
@@ -158,7 +171,9 @@ export function getOpportunityColumns(
         } as ColumnDef<Opportunity>
       }
 
-      // Replace interactive stage cell with a read-only badge — no onWonSelected
+      // Replace interactive stage cell with a read-only badge — same colors
+      // as the editable one (read-only means not clickable, not less
+      // scannable), just no popover trigger and no onWonSelected
       if (col.id === 'stage') {
         return {
           ...col,
@@ -166,7 +181,7 @@ export function getOpportunityColumns(
             const stage = row.original.stage
             if (!stage) return null
             return (
-              <span className="text-xs font-medium text-muted-foreground">
+              <span className={stageBadgeClasses(stage.is_won, stage.is_lost)}>
                 {stage.name}
               </span>
             )

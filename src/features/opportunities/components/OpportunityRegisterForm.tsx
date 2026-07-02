@@ -137,7 +137,7 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="prospect_company_name">Prospect company name</Label>
           <Input id="prospect_company_name" disabled={isPending} {...register('prospect_company_name')} />
@@ -152,7 +152,7 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="requirement_type">Requirement type</Label>
           <Input
@@ -200,7 +200,7 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
         {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="lead_source">Lead source</Label>
           <Controller
@@ -238,7 +238,7 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
           Fill in what you know now — the rest can be added later from the opportunity.
         </p>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="prospect_organization_type">Organization type</Label>
             <Controller
@@ -291,7 +291,7 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="prospect_contact_name">Contact name</Label>
             <Input id="prospect_contact_name" disabled={isPending} {...register('prospect_contact_name')} />
@@ -310,7 +310,7 @@ export function OpportunityRegisterForm({ profile }: OpportunityRegisterFormProp
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="prospect_contact_email">Contact email</Label>
             <Input

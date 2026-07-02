@@ -1,6 +1,7 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
+import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface ToggleFilterChipProps {
   label: string
@@ -9,13 +10,22 @@ interface ToggleFilterChipProps {
   activeVariant?: 'destructive' | 'secondary'
 }
 
-// Shared boolean filter chip (e.g. At Risk, Show closed) — a Badge-styled
-// toggle button with proper aria-pressed semantics, so list pages don't each
-// re-implement the same button+Badge wrapper.
+// Shared boolean filter chip (e.g. At Risk, Show closed) with aria-pressed
+// semantics, so list pages don't each re-implement the same toggle. Rendered
+// as a size=sm Button to sit at the same height as the MultiSelectFilter
+// buttons beside it, with a leading check when active so the pressed state is
+// unmistakable regardless of variant color.
 export function ToggleFilterChip({ label, pressed, onPressedChange, activeVariant = 'secondary' }: ToggleFilterChipProps) {
   return (
-    <button type="button" aria-pressed={pressed} onClick={() => onPressedChange(!pressed)}>
-      <Badge variant={pressed ? activeVariant : 'outline'}>{label}</Badge>
-    </button>
+    <Button
+      type="button"
+      size="sm"
+      variant={pressed ? activeVariant : 'outline'}
+      aria-pressed={pressed}
+      onClick={() => onPressedChange(!pressed)}
+    >
+      {pressed && <Check />}
+      {label}
+    </Button>
   )
 }

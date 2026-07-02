@@ -1,0 +1,927 @@
+{
+  "timings": {
+    "nextStepSaveOptimisticMs": 49,
+    "atRiskFilterToggleMs": 87,
+    "closeDealSubmitToToastMs": 522
+  },
+  "checks": {
+    "bodyFontFamily": "\"Times New Roman\"",
+    "fontSansVar": "",
+    "geistVar": "\"Geist\", \"Geist Fallback\"",
+    "skeletonSeen": true,
+    "adminRowCount": 25,
+    "paginationText": "Page 1 of 2",
+    "adminTabStops": [
+      "input#base-ui-_R_55fiv6brb_ \"Search company or country…\"",
+      "button#base-ui-_R_d95fiv6brb_ \"Stage\"",
+      "button#base-ui-_R_dd5fiv6brb_ \"Sector\"",
+      "button \"At Risk\"",
+      "button \"Show closed\"",
+      "button#base-ui-_r_1_ \"Awaiting License▾\"",
+      "button \"License pre-check filed — expected 4-6 w\"",
+      "button#base-ui-_r_4_ \"Negotiation▾\"",
+      "button \"Final pricing review with procurement bo\"",
+      "button#base-ui-_r_7_ \"Proposal Sent▾\"",
+      "button \"Awaiting technical evaluation committee \"",
+      "button#base-ui-_r_a_ \"Qualified▾\""
+    ],
+    "atRiskFilteredRowCount": 5,
+    "rsmRowCount": 15,
+    "rsmHasSectorFilter": false,
+    "formTabStops": [
+      "input#prospect_company_name",
+      "input#country",
+      "input#requirement_type",
+      "button#sector_id[combobox]",
+      "textarea#description",
+      "button#lead_source[combobox]",
+      "input#registration_date",
+      "input#registration_date",
+      "input#registration_date",
+      "input#registration_date",
+      "button#prospect_organization_type[combobox]",
+      "button#advisor_id[combobox]",
+      "input#prospect_contact_name",
+      "input#prospect_website",
+      "input#prospect_contact_email",
+      "input#prospect_contact_phone"
+    ],
+    "sectorSelectOpensWithEnter": true,
+    "sectorSelectClosesWithEscape": true,
+    "smHasNewButton": false,
+    "smStageIsPlainText": true,
+    "mobileTableScrollWidth": {
+      "scroll": 889,
+      "client": 325
+    }
+  },
+  "errors": [
+    {
+      "section": "admin list at 40 rows",
+      "message": "Error: locator.click: Error: strict mode violation: locator('button:has-text(\"Next\")') resolved to 2 elements:\n    1) <button class=\"w-full text-left text-sm truncate max-w-[280px] text-muted-foreground hover:text-foreground transition-colors\">…</button> aka getByRole('button', { name: 'Add next step…' })\n    2) <button class=\"px-3 py-1.5 rounded-md border border-border disabled:opacity-40 hover:bg-muted transition-colors\">Next</button> aka getByRole('button', { name: 'Next', exact: true })\n\nCal"
+    },
+    {
+      "section": "admin stage popover + optimistic latency",
+      "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('tbody tr').filter({ hasText: 'Riga Airport' }).first().locator('td').nth(2).locator('button').filter({ hasText: 'Qualified' }) to be visible\u001b[22m\n"
+    },
+    {
+      "section": "admin re-stage confirmation dialog",
+      "message": "TimeoutError: page.waitForSelector: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[role=\"alertdialog\"]') to be visible\u001b[22m\n"
+    },
+    {
+      "section": "rsm form validation errors",
+      "message": "Error: locator.click: Error: strict mode violation: locator('button[type=\"submit\"]') resolved to 2 elements:\n    1) <button type=\"submit\" class=\"flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground\">…</button> aka getByRole('button', { name: 'Log out' })\n    2) <button tabindex=\"0\" type=\"submit\" data-slot=\"button\" class=\"group/button inline-flex shrink-0 items-center justify-center rounded-lg border b"
+    },
+    {
+      "section": "rsm form submit latency",
+      "message": "Error: locator.click: Error: strict mode violation: locator('button[type=\"submit\"]') resolved to 2 elements:\n    1) <button type=\"submit\" class=\"flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground\">…</button> aka getByRole('button', { name: 'Log out' })\n    2) <button tabindex=\"0\" type=\"submit\" data-slot=\"button\" class=\"group/button inline-flex shrink-0 items-center justify-center rounded-lg border b"
+    }
+  ],
+  "diagnostics": {
+    "adminDesktop": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=qhhIrZRXww5A7vXt",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=VlnzeBXg9IU9Z2lT",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=5vvxSC2R0n0u16oX",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=k34K8mlpxEk9AWlg",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=elSYuVQ_xeTUjet4",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities",
+          "method": "POST",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "rsmDesktop": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/login",
+          "method": "POST",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        }
+      ]
+    },
+    "rsmForm": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=3xioaATpXwzqSmJf",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=3xioaATpXwzqSmJf",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "smDesktop": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/login",
+          "method": "POST",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "mobile": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/dashboard"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=elSYuVQ_xeTUjet4",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=k34K8mlpxEk9AWlg",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=VlnzeBXg9IU9Z2lT",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=qhhIrZRXww5A7vXt",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=5vvxSC2R0n0u16oX",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=3xioaATpXwzqSmJf",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=3xioaATpXwzqSmJf",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    }
+  }
+}
