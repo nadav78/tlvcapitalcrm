@@ -19,13 +19,13 @@ Working plan for the deferred items from the 2026-07 craft review (`docs/fable-u
 
 These are judgment calls, not defects. They're listed first because they calibrate what "considered" means in this codebase — apply the same taste to new work. Each is small enough to ride along with any list-page session:
 
-- **Relative timestamps are wordy.** `formatDistanceToNow` renders "about 1 month ago", which wraps to two lines in the Last Activity column. Strip the `about ` prefix (or move to a compact "34d ago" formatter in `lib/utils.ts` if more cells need it). `features/opportunities/columns.tsx` → `LastActivityCell`.
-- **Row hover is nearly invisible.** `DataTable.tsx` uses `hover:bg-muted/50` (~1.5% gray on this palette). Bump to `hover:bg-muted`. One class.
-- **Company names wrap to 2–3 lines at 1440px,** making row heights uneven. A `max-w` + `truncate` + `title` tooltip on the Company cell would tighten vertical rhythm — but weigh against the at-risk badge now sharing that cell. Defensible either way; decide once when doing item 1 or 2 below.
+- ✅ DONE — **Relative timestamps are wordy.** `formatDistanceToNow` renders "about 1 month ago", which wraps to two lines in the Last Activity column. Strip the `about ` prefix (or move to a compact "34d ago" formatter in `lib/utils.ts` if more cells need it). `features/opportunities/columns.tsx` → `LastActivityCell`.
+- ✅ DONE — **Row hover is nearly invisible.** `DataTable.tsx` uses `hover:bg-muted/50` (~1.5% gray on this palette). Bump to `hover:bg-muted`. One class.
+- ✅ DONE — **Company names wrap to 2–3 lines at 1440px,** making row heights uneven. A `max-w` + `truncate` + `title` tooltip on the Company cell would tighten vertical rhythm — but weigh against the at-risk badge now sharing that cell. Defensible either way; decide once when doing item 1 or 2 below. **Decided:** truncate the name in its own flex child, keep the at-risk `Badge` as a separate `shrink-0` sibling so it's never clipped.
 
 ## Ranked plan items
 
-### 1. Mobile opportunities list layout — highest impact
+### 1. ✅ DONE (see Session log) — Mobile opportunities list layout — highest impact
 At 375px the table is 889px wide in a 325px viewport: Value / Next Step / Last Activity hide behind an unhinted horizontal scroll and ~5 rows fit per screen (evidence: `.captures/mobile-375/32-list-top.png`, `craft-review-capture.json → checks.mobileTableScrollWidth`). PRODUCT.md's premise is RSMs in the field on phones.
 **Change:** a `md:hidden` card list rendered from the same `useOpportunities` data in `features/opportunities/components/OpportunityListView.tsx`; wrap the existing `DataTable` in `hidden md:block`. Card contents: company + at-risk badge, stage badge (`stageBadgeClasses`), value (right-aligned), relative last-activity. Keep the filters row as-is (it already wraps). No data-layer change. Card tap = same navigation as row click; inline editing can stay desktop-only for v1 of the card (note it in the PR if so).
 **Quality bar:** verify at 375px with seeded data; no horizontal scroll anywhere; card list and table stay consistent (one data source, no duplicated column logic beyond the card markup).
@@ -49,7 +49,7 @@ Popovers, dialogs, selects appear/disappear in a single frame — "abrupt" rathe
 ### 6. Login page uses shared primitives
 `app/(auth)/login/page.tsx` hand-rolls its two inputs with slightly different metrics than `components/ui/input.tsx` — the only form in the app not on the shared primitive. Dependency-following refactor, no logic change; qualifies as low-risk merge under CLAUDE.md.
 
-### 7. Next-step edit affordance for filled cells
+### 7. ✅ DONE (see Session log) — Next-step edit affordance for filled cells
 `InlineTextareaCell`'s filled state is plain muted text — nothing at rest says "click to edit" (the empty state's "Add next step…" is fine). A small pencil icon on hover/focus is the obvious idiom. **[bundle]** with item 1 (the card layout changes truncation widths anyway).
 
 ### 8. Stage color tokens — lowest urgency
@@ -61,3 +61,4 @@ Popovers, dialogs, selects appear/disappear in a single frame — "abrupt" rathe
 |---|---|---|---|
 | 2026-07-02 | Craft review (Fable) | Review written (`08-craft-review.md`); 9 quick wins fixed in PR #10; this plan created | PR #10 open awaiting fresh-session review. Items 1–8 above not started. |
 | 2026-07-02 | Independent review of PR #10 | Fresh-session review found and fixed 2 schema message bugs (`region_id` copy-paste, `z.union()` second-arg message not applying in Zod v4) plus 3 stale `docs/STATUS.md` pointers left by the ARCHITECTURE.md split; PR #10 merged (`a81a836`), branch deleted | Items 1–8 above still not started — next session should pick up from the Ranked plan items list. |
+| 2026-07-02 | Mobile card list + next-step affordance | Items 1 and 7 shipped together (branch `feat/mobile-opportunity-cards`, **PR #11** at https://github.com/nadav78/tlvcapitalcrm/pull/11, open awaiting fresh-session review): `features/opportunities/components/OpportunityCard.tsx` (new `md:hidden` card list reusing `formatValue`/`stageBadgeClasses`/`LastActivityCell` from `columns.tsx` — exported those for reuse, no duplicated formatting logic), `DataTable` wrapped `hidden md:block`. Item 7's pencil-on-hover added to `InlineTextareaCell`'s filled state (desktop-only; cards don't inline-edit in this pass). Also rode along the three Taste calibration items above (cheap, touched the same files anyway): stripped `formatDistanceToNow`'s "about " prefix, bumped row hover to `hover:bg-muted`, truncated the Company cell with the at-risk badge as a separate non-clipped flex child. Verified with a scripted Playwright pass (desktop 1440px + mobile 375px, admin role, 41-row seed data): no horizontal scroll at 375px (`scrollWidth === clientWidth`), table hidden / cards shown below the `md` breakpoint and vice versa, at-risk badge renders on filtered mobile cards, pencil hover confirmed on desktop, zero console warnings/errors on either viewport. `npx tsc --noEmit`, `npm test` (82/82), `npm run lint` (0 errors), `npm run build` all clean. | Items 2–6, 8 still not started. Item 2 (keyboard row nav) and item 5 (table skeleton) remain bundled with the Detail page and Clients list respectively per their notes above — not started, still blocked on those pages. |

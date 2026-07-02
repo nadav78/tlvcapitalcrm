@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { getOpportunityColumns } from '@/features/opportunities/columns'
 import { useOpportunities, usePipelineStages, useSectors } from '@/features/opportunities/hooks'
 import { CloseDealModal } from './CloseDealModal'
+import { OpportunityCard } from './OpportunityCard'
 import type { UserRole } from '@/lib/auth'
 
 interface OpportunityListViewProps {
@@ -118,7 +119,22 @@ export function OpportunityListView({ role, userSectorIds }: OpportunityListView
           {newOpportunityLink}
         </div>
       ) : (
-        <DataTable columns={columns} data={displayed} onRowClick={(row) => router.push(`/opportunities/${row.id}`)} />
+        <>
+          {/* < 768px: card list — the table is 889px wide and unusable at
+              375px (docs/UI-PLAN.md item 1). Same data, no separate fetch. */}
+          <div className="space-y-2 md:hidden">
+            {displayed.map((opportunity) => (
+              <OpportunityCard
+                key={opportunity.id}
+                opportunity={opportunity}
+                onClick={() => router.push(`/opportunities/${opportunity.id}`)}
+              />
+            ))}
+          </div>
+          <div className="hidden md:block">
+            <DataTable columns={columns} data={displayed} onRowClick={(row) => router.push(`/opportunities/${row.id}`)} />
+          </div>
+        </>
       )}
 
       {closingOpportunity && (

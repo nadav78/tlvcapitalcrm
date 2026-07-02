@@ -86,7 +86,7 @@ export function DataTable<TData>({
                   onClick={() => onRowClick?.(row.original)}
                   className={cn(
                     'border-b border-border last:border-0 transition-colors',
-                    onRowClick && 'cursor-pointer hover:bg-muted/50',
+                    onRowClick && 'cursor-pointer hover:bg-muted',
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
