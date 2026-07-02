@@ -51,6 +51,10 @@ export function CloseDealModal({ opportunity, open, onOpenChange }: CloseDealMod
     defaultValues: {
       contract_value: opportunity.estimated_value ?? undefined,
       currency: opportunity.currency ?? undefined,
+      // (currency stays undefined here for RHF's "untouched" semantics; the
+      // Select below coerces to null at the JSX call site per the Base UI
+      // convention in ARCHITECTURE.md — a value that goes undefined → string
+      // trips React's uncontrolled-to-controlled warning)
       signed_date: '',
       expected_delivery_date: '',
     },
@@ -139,7 +143,7 @@ export function CloseDealModal({ opportunity, open, onOpenChange }: CloseDealMod
                 name="currency"
                 control={control}
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange} disabled={isPending}>
+                  <Select value={field.value ?? null} onValueChange={field.onChange} disabled={isPending}>
                     <SelectTrigger id="currency" className="w-full">
                       <SelectValue placeholder="Select currency" />
                     </SelectTrigger>

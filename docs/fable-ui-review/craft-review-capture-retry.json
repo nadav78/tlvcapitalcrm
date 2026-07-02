@@ -1,0 +1,181 @@
+{
+  "timings": {
+    "stageChangeOptimisticMs": 89,
+    "createOpportunitySubmitToToastMs": 240
+  },
+  "checks": {
+    "adminDiag": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/login",
+          "method": "POST",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/settings?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=g-3rmyHwMcPpDOAR",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/opportunities/new?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=zO24xmZqliMyJldi",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "validationErrorTexts": [
+      "Too small: expected string to have >=1 characters",
+      "Too small: expected string to have >=1 characters",
+      "Too small: expected string to have >=1 characters",
+      "Invalid input: expected string, received undefined",
+      "Too small: expected string to have >=1 characters",
+      "Invalid option: expected one of \"cold_outreach\"|\"partner\"|\"inbound\"|\"diplomatic\"|\"marketing\""
+    ],
+    "rsmFormDiag": {
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities/new"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=i20ygPkNiwb1LHHn",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/activities?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/products?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/contacts?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/clients?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "HTTP 404"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=xYH5qtJPItWCHmQu",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=3xioaATpXwzqSmJf",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/dashboard?_rsc=3xioaATpXwzqSmJf",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://localhost:3000/opportunities?_rsc=8HkBbHzGuclDWJ9y",
+          "method": "GET",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

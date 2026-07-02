@@ -1,0 +1,45 @@
+{
+  "checks": {
+    "bodyFontFamily": "Geist, \"Geist Fallback\"",
+    "adminDiag": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://localhost:3000/opportunities"
+        }
+      ],
+      "pageErrors": []
+    },
+    "validationErrorTexts": [
+      "Enter the prospect company name",
+      "Enter the country",
+      "Enter the requirement type",
+      "Select a sector",
+      "Enter a brief description",
+      "Select a lead source"
+    ],
+    "reactWarningsAfterCurrencySelect": []
+  },
+  "errors": []
+}

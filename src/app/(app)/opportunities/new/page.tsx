@@ -12,7 +12,7 @@ export default async function NewOpportunityPage() {
   if (profile.role === 'sector_manager') redirect('/opportunities')
 
   return (
-    <div>
+    <div className="p-6">
       <PageHeader title="New Opportunity" description="Register a new opportunity in the pipeline." />
       <OpportunityRegisterForm profile={profile} />
     </div>

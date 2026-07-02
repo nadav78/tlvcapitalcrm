@@ -3,7 +3,6 @@
 This file is read by Claude Code at the start of every session. It defines how to work in this codebase. Follow every rule here without exception — they exist because the previous version of this CRM violated them and failed as a result.
 
 @docs/PRODUCT.md
-@docs/SCHEMA.md
 @docs/ARCHITECTURE.md
 
 ## What This Project Is
@@ -11,8 +10,8 @@ This file is read by Claude Code at the start of every session. It defines how t
 An internal CRM for TLV Capital, a defense export company. Three user roles: Admin (full access across all regions and sectors), RSM (own region only), Sector Manager (own sector's product catalog + read-only pipeline). Built with Next.js 15 App Router, Supabase (PostgreSQL + RLS), shadcn/ui, TanStack Table, and TanStack Query.
 
 - Business requirements → `docs/PRODUCT.md`
-- Database schema → `docs/SCHEMA.md`
-- Stack decisions and patterns → `docs/ARCHITECTURE.md`
+- Database schema → `docs/SCHEMA.md` — **not auto-loaded.** Read it before writing any migration, RLS policy, Server Action, or `api.ts` query, and before adding form fields that map to columns. It is the human-readable contract (column semantics, constraints, RLS per table, design rationale); `src/lib/supabase/database.types.ts` only catches name/type errors, not meaning.
+- Stack decisions and patterns → `docs/ARCHITECTURE.md` (core, auto-loaded). Detailed feature patterns, per-page UX specs, and the testing/browser-verification setup live in `docs/reference/` — read the relevant file before implementing a feature, page, or test (each ARCHITECTURE.md section stub says which).
 
 ## Non-Negotiable Rules
 
@@ -54,7 +53,7 @@ Any redirect target that comes from user input (a query param, a form field, a s
 
 Closing a deal, reassigning an opportunity, and deleting a client/contact each write more than one record or trigger complex side effects (Client + Contract creation, contact linking, region reassignment). These always wait for server confirmation before the UI reflects the change — no `onMutate` cache-patching — because a failed optimistic update here is expensive or unclear to unwind cleanly.
 
-This does **not** extend to single-field mutations (a stage change, the `next_step` textarea, an `is_at_risk` toggle). Those are exactly the fields the Inline Editing pattern requires to feel instant, and a one-field rollback is cheap — an optimistic update there is a reasonable, deliberate UX choice, not something to avoid by default. See ARCHITECTURE.md's "Feedback Pattern" and "Inline Editing for High-Frequency Fields" sections.
+This does **not** extend to single-field mutations (a stage change, the `next_step` textarea, an `is_at_risk` toggle). Those are exactly the fields the Inline Editing pattern requires to feel instant, and a one-field rollback is cheap — an optimistic update there is a reasonable, deliberate UX choice, not something to avoid by default. See `docs/reference/PAGE-SPECS.md`'s "Feedback Pattern" and `docs/reference/FEATURE-PATTERNS.md`'s "Inline Editing for High-Frequency Fields" sections.
 
 ### 9. `pipeline_stages.is_won` and `is_lost` are read-only display fields in any admin UI — never editable checkboxes.
 
@@ -62,7 +61,11 @@ Changing which stage carries `is_won = true` silently changes which stage trigge
 
 ### 10. Follow the Form Presentation table exactly — never a full page for an edit, never a modal with more than ~6 fields.
 
-Creating an Opportunity is a full page. Editing an Opportunity, Client, or Contact is a slide-over. A focused action (Log Activity, Close Deal, a destructive confirmation) is a modal. A high-frequency field (stage, next step, at-risk) is inline. Picking the wrong one of these for a new form is easy to do without noticing — see ARCHITECTURE.md's "Form Presentation" table before adding any new form.
+Creating an Opportunity is a full page. Editing an Opportunity, Client, or Contact is a slide-over. A focused action (Log Activity, Close Deal, a destructive confirmation) is a modal. A high-frequency field (stage, next step, at-risk) is inline. Picking the wrong one of these for a new form is easy to do without noticing — see `docs/reference/PAGE-SPECS.md`'s "Form Presentation" table before adding any new form.
+
+### 11. Before building or modifying any UI, read `docs/UI-STANDARDS.md`.
+
+It is short and deliberately not auto-loaded. Every rule in it traces to a defect a craft review actually found (the app shipped rendering in Times New Roman because a token self-referenced; forms shipped edge-flush at 375px; Zod's default messages leaked `expected one of "cold_outreach"|…` to users). New UI that skips it re-introduces paid-for problems. Deferred UI improvements are planned in `docs/UI-PLAN.md` — check it before starting standalone UI polish work.
 
 ## Folder Structure
 
@@ -303,7 +306,7 @@ Branch naming:
 At the end of any implementation session:
 1. Update `docs/STATUS.md` (see Session Workflow above)
 2. Make sure `npx tsc --noEmit`, `npm test`, and `npm run build` are clean
-3. For UI changes: if the feature has multiple role-gated branches (different behavior for Admin/RSM/Sector Manager, a redirect guard) or a failure mode that wouldn't show up just by looking at the screen (a React console warning, a swallowed network error), suggest running a scripted Playwright verification pass before opening the PR — don't just assume the user's own manual click-through covered every branch. See `docs/ARCHITECTURE.md`'s "Scripted Browser Verification" section for setup and when this is (and isn't) worth the cost. This is a suggestion to raise, not something to run unprompted on every UI change — most UI changes are fine verified by hand.
+3. For UI changes: if the feature has multiple role-gated branches (different behavior for Admin/RSM/Sector Manager, a redirect guard) or a failure mode that wouldn't show up just by looking at the screen (a React console warning, a swallowed network error), suggest running a scripted Playwright verification pass before opening the PR — don't just assume the user's own manual click-through covered every branch. See `docs/reference/TESTING.md`'s "Scripted Browser Verification" section for setup and when this is (and isn't) worth the cost. This is a suggestion to raise, not something to run unprompted on every UI change — most UI changes are fine verified by hand.
 4. Create a PR with `gh pr create`
 5. Decide whether the change needs review before merging:
    - **Low-risk** — docs-only changes, dependency-following refactors (e.g. swapping hand-rolled markup for an existing shadcn/library component with no logic change), mechanical extractions, config/rule updates: skip review and merge directly with `gh pr merge --squash` once step 2 is clean.
